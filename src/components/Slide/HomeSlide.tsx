@@ -8,7 +8,6 @@ export default function HomeSlide() {
     <div class={cn(styles.slide, styles.home)}>
       <h1>The HasanAbi Census</h1>
       <p><i>with data from June 2020 to August 2024</i></p>
-      <p>(bodged together in like 4 hours okay, but i'll improve it later)</p>
       {/*<p>art and stylistic direction by Oni_Spumoni</p>*/}
       {/*<p>website by brilliantdrink</p>*/}
       <Signature class={styles.signature} classSvg={''}/>
