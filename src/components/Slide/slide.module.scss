@@ -24,11 +24,32 @@
   }
 
   h1 {
+    position: relative;
     margin-top: 2rem;
     font-size: 5rem;
     color: transparent;
 
     background: url('../../images/title.svg') center / contain no-repeat;
+  }
+
+  .comment {
+    position: absolute;
+    right: -3rem;
+    top: -1rem;
+    font-size: 1.5rem;
+    $rotate: rotate(12deg);
+    transform-origin: center;
+    animation: pulse .5s alternate infinite cubic-bezier(.4, 0, .6, 1);
+    background: url('../../images/holy-toledo.svg') center / contain no-repeat;
+
+    @keyframes pulse {
+      from {
+        transform: $rotate scale(.95);
+      }
+      to {
+        transform: $rotate scale(1.05);
+      }
+    }
   }
 
   .signature {
