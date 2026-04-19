@@ -10,7 +10,7 @@ export default function HomeSlide() {
         The HasanAbi Census
         <span class={styles.comment}>Holy Toledo!</span>
       </h1>
-      <p><i>with data from June 2020 to August 2024</i></p>
+      <p><i>with data from June 2020 to August 2025</i></p>
       {/*<p>art and stylistic direction by Oni_Spumoni</p>*/}
       {/*<p>website by brilliantdrink</p>*/}
       <Signature class={styles.signature} classSvg={''}/>
