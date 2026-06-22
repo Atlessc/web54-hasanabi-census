@@ -1,7 +1,9 @@
-import {createSignal, onMount} from 'solid-js'
+import {createEffect, createSignal, onMount, Show} from 'solid-js'
 import createEmblaCarousel from 'embla-carousel-solid'
 import {default as cn} from 'classnames'
 import {BsBoxArrowInLeft, BsBoxArrowInRight} from 'solid-icons/bs'
+import {FaSolidCaretDown} from 'solid-icons/fa'
+import {createMediaQuery, makeMediaQueryListener} from '@solid-primitives/media'
 import {HomeSlide} from '../Slide'
 
 import styles from './slider.module.scss'
@@ -31,8 +33,62 @@ export default function Slider() {
       })
       resetCanScroll()
       api.on('select', resetCanScroll)
+      api.on('select', () => {
+        navEmblaApi()?.scrollTo(emblaApi()?.selectedScrollSnap() ?? 0)
+      })
     }
   })
+
+  const isSmall = createMediaQuery("(max-width: 900px)")
+  const [navExpanded, setNavExpanded] = createSignal(false)
+  const [navEmblaRef, navEmblaApi] = createEmblaCarousel(() => ({
+    dragFree: true,
+    containScroll: false,
+    axis: 'y',
+    watchSlides: false,
+  }))
+  const [navIndex, setNavIndex] = createSignal(0)
+
+  onMount(() => {
+    const api = navEmblaApi()
+    if (api) {
+      const itemHeight = 3 * 16
+      api.on('pointerUp', () => {
+        const {scrollTo, target, location} = api.internalEngine()
+        const diffToTarget = target.get() - location.get()
+        const factor = Math.abs(diffToTarget) < itemHeight / 2.5 ? 10 : 0.1
+        const distance = diffToTarget * factor
+        scrollTo.distance(distance, true)
+      })
+      const updateStyles = () => {
+        const itemAmount = api.scrollSnapList().length
+        const items = api.slideNodes()
+        const maxDistance = 2.5
+        api.scrollSnapList().map((snapPosition, i) => {
+          const distance = Math.abs(snapPosition - api.scrollProgress())
+          const absoluteDistance = distance * (itemAmount - 1)
+          const proximity = (absoluteDistance / maxDistance) * -1 + 1
+          items[i].style.opacity = String(proximity)
+          items[i].style.setProperty('--scale', String(1 - (absoluteDistance / maxDistance) * .1))
+        })
+      }
+      api.on('scroll', updateStyles)
+      updateStyles()
+      api.on('select', () => {
+        emblaApi()?.scrollTo(api.selectedScrollSnap())
+        setNavIndex(api.selectedScrollSnap())
+      })
+
+      window.addEventListener('pointerdown', (e) => {
+        if (!e.target || !(e.target instanceof Element)) return
+        if (!e.target.classList.contains(styles.item)) {
+          setNavExpanded(false)
+        }
+      })
+    }
+  })
+
+  const allSlides = [{name: 'Cover'}, ...barChartSlides]
 
   return <>
     <div class={styles.slider} ref={emblaRef}>
@@ -52,14 +108,36 @@ export default function Slider() {
               onclick={() => emblaApi()?.scrollPrev()}>
         <BsBoxArrowInLeft />
       </button>
+    </div>
+    <Show when={!isSmall()}>
       <nav class={styles.nav}>
-        {[{name: 'Cover'}, ...barChartSlides].map(({name: slide}, index) => <>
-          <span class={cn(styles.item, slideIndex() === index && styles.selected)}
-                onclick={() => emblaApi()?.scrollTo(index)}>
-            {slide}
-          </span>
+        {allSlides.map(({name: slide}, index) => <>
+            <span class={cn(styles.item, slideIndex() === index && styles.selected)}
+                  onclick={() => emblaApi()?.scrollTo(index)}>
+              {slide}
+            </span>
         </>)}
       </nav>
-    </div>
+    </Show>
+    <Show when={isSmall()}>
+      <nav class={cn(styles.nav, styles.sliding, !navExpanded() && styles.collapsed)} ref={navEmblaRef}>
+        <div class={styles.container}>
+          {allSlides.map(({name: slide}, index) => <>
+            <span class={cn(styles.item, (!navExpanded() && navIndex() === index) && styles.selected)} onclick={() => {
+              if (navExpanded()) {
+                emblaApi()?.scrollTo(index)
+                navEmblaApi()?.scrollTo(index)
+              }
+              setNavExpanded(!navExpanded())
+            }}>
+              {slide}
+              <Show when={!navExpanded()}>
+                <FaSolidCaretDown class={styles.selectIcon} />
+              </Show>
+            </span>
+          </>)}
+        </div>
+      </nav>
+    </Show>
   </>
 }

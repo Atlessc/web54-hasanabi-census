@@ -48,6 +48,7 @@
 
     $hover-scale: scale(1.1);
     $margin: 2rem;
+    $margin-md: 0rem;
 
     transition: transform .2s ease;
     cursor: pointer;
@@ -62,53 +63,116 @@
 
     &.next {
       right: $margin;
-      //$transform: rotate(-60deg);
-      //transform: $transform;
-
-      /*&:hover {
-        transform: $transform $hover-scale;
-      }*/
     }
 
     &.prev {
       left: $margin;
-      //$transform: rotateZ(60deg) rotateY(180deg);
-      //transform: $transform;
+    }
 
-      /*&:hover {
-        transform: $transform $hover-scale;
-      }*/
+    @media screen and (max-width: 1200px) {
+      &.next {
+        right: $margin-md;
+      }
+
+      &.prev {
+        left: $margin-md;
+      }
     }
   }
 
-  .nav {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+  @media screen and (max-width: 700px) {
+    .arrow {
+      display: none;
+    }
+  }
+}
 
-    padding: 1rem 10%;
-    box-sizing: border-box;
-    background-color: inherit;
-    font-family: 'Archivo', sans-serif;
+.nav {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+  padding: 1rem 10%;
+  box-sizing: border-box;
+  background-color: inherit;
+  font-family: 'Archivo', sans-serif;
+
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  &.sliding {
+    height: 12rem;
+    padding: .5rem 10%;
+
+    background: transparentize(#111, .5);
+    backdrop-filter: blur(10px);
+
+    overflow: hidden;
+    display: block;
+
+    transition: .3s ease;
+    transition-property: transform, background, backdrop-filter;
+
+    &.collapsed {
+      transform: translateY(#{(12rem * 0.5) - (3rem * 0.5)});
+      background: transparentize(#111, 1);
+      backdrop-filter: blur(0px);
+
+      .item:not(.selected) {
+        opacity: 0 !important;
+        pointer-events: none;
+      }
+
+      .item.selected {
+        opacity: 1;
+
+        &:after {
+          content: none;
+        }
+      }
+    }
+
+    .container {
+      height: 100%;
+
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      gap: 0;
+    }
 
     .item {
-      position: relative;
-      cursor: pointer;
+      padding: .5rem;
+      height: 3rem;
+      box-sizing: border-box;
+      text-align: center;
+      --scale: 1;
+      transform: rotate(0.001deg) scale(1);
+      will-change: transform;
+      transition: opacity .1s ease;
+    }
+  }
 
-      &.selected:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: transparentize(#ff1f50, .5);
-      }
+  .item {
+    position: relative;
+    cursor: pointer;
+
+    &.selected:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparentize(#ff1f50, .5);
+    }
+
+    .selectIcon {
+      margin-left: .2rem;
+      font-size: .8em;
     }
   }
 }

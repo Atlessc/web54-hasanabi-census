@@ -6,7 +6,7 @@ const font = {
   size: 15,
 }
 
-export const common = (id: string): ChartOptions => ({
+export const common = (id: string, tiny: boolean): ChartOptions => ({
   responsive: true,
   // maintainAspectRatio: false,
   plugins: {
@@ -37,9 +37,12 @@ export const common = (id: string): ChartOptions => ({
           const insertIndex = label.indexOf('/') + 1
           label = label.slice(0, insertIndex) + '\n' + label.slice(insertIndex)
         }
-        const percentage = Math.round(Number(value) * 100 * 100) / 100 + '%'
+        const roundedPercentageValue = tiny
+          ? Math.round(Number(value) * 100)
+          : Math.round(Number(value) * 100 * 100) / 100
+        const percentage = roundedPercentageValue + '%'
         if (!value || value === 0) return ''
-        else if (value < .05) return percentage
+        else if (tiny || value < .05) return percentage
         else if (value < .10) return label + '\n' + percentage
         else return label + '\n' + percentage + '\n' + totalAmount
       }
@@ -47,16 +50,29 @@ export const common = (id: string): ChartOptions => ({
   }
 })
 
-export const stackedBarChart = (id: string): ChartOptions => ({
-  ...common(id),
+export const stackedBarChart = (id: string, tiny: boolean = false): ChartOptions => ({
+  ...common(id, tiny),
   scales: {
     x: {
       stacked: true,
-      ticks: {font}
+      ticks: {
+        callback(value: number) {
+          if (tiny) {
+            const [month, year] = this.getLabelForValue(value).split(' ')
+            return month.substring(0, 3) + ' \'' + year.substring(2, 4)
+          } else {
+            return this.getLabelForValue(value)
+          }
+        },
+        minRotation: tiny ? 90 : 0,
+        maxRotation: 90,
+        font
+      }
     },
     y: {
       stacked: true,
       ticks: {
+        display: !tiny,
         callback: value => (Number(value) * 100) + '%',
         font
       }

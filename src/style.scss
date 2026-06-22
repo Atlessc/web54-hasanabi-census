@@ -34,6 +34,10 @@
   font-display: swap;
 }
 
+:root {
+  overflow: hidden;
+}
+
 html, body, #app {
   height: 100%;
   width: 100%;
@@ -44,4 +48,5 @@ html, body, #app {
 
   background-color: #111;
   color: #ddd;
+  overflow: hidden;
 }

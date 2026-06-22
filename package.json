@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@solid-primitives/media": "^2.3.5",
+    "@solid-primitives/resize-observer": "^2.1.5",
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.4",
     "chartjs-plugin-datalabels": "^2.2.0",

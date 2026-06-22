@@ -1,19 +1,19 @@
 import styles from './slide.module.scss'
 
+import {createMediaQuery} from '@solid-primitives/media'
 import {default as cn} from 'classnames'
 import Signature from '../Signature'
 
 export default function HomeSlide() {
+  const isLMedium = createMediaQuery("(max-width: 1600px)")
   return <>
     <div class={cn(styles.slide, styles.home)}>
       <h1>
-        The HasanAbi Census
+        The&nbsp;HasanAbi{isLMedium() ? <br/> : ' '}Census
         <span class={styles.comment}>Holy Toledo!</span>
       </h1>
       <p><i>with data from June 2020 to August 2025</i></p>
-      {/*<p>art and stylistic direction by Oni_Spumoni</p>*/}
-      {/*<p>website by brilliantdrink</p>*/}
-      <Signature class={styles.signature} classSvg={''}/>
+      <Signature class={styles.signature} classSvg={''} />
     </div>
   </>
 }

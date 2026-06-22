@@ -32,6 +32,16 @@
     background: url('../../images/title.svg') center / contain no-repeat;
   }
 
+  @media screen and (max-width: 1600px) {
+    h1 {
+      font-size: min(5rem, calc(12vw));
+
+      word-wrap: normal;
+      text-align: center;
+      background-image: url('../../images/title_stacked.svg');
+    }
+  }
+
   .comment {
     position: absolute;
     right: -3rem;
