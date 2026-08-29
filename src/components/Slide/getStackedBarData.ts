@@ -1,9 +1,9 @@
 import {parse} from 'csv-parse/browser/esm/sync'
-import {ChartData} from 'chart.js'
-import {colors} from './colors'
+import type {ChartData} from 'chart.js'
+import {colors as defaultColors} from './colors'
 import {normalizeChartDataY} from './utils'
 
-export default async function getStackedBarData(url: string, id: string) {
+export default async function getStackedBarData(url: string, id: string, colors: string[] = defaultColors) {
   const csvText = await fetch(url).then(res => res.text())
   const res = parse(csvText) as string[][]
   const labels = res.shift() as string[]
@@ -16,6 +16,9 @@ export default async function getStackedBarData(url: string, id: string) {
         label,
         data: groupData.map(Number),
         backgroundColor: colors[index] ?? null,
+        barPercentage: 0.95,
+        categoryPercentage: 0.9,
+        maxBarThickness: 400,
       }
     }), id)
   }

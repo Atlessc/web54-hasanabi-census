@@ -44,13 +44,13 @@
 
   .comment {
     position: absolute;
-    right: -3rem;
+    right: -2rem;
     top: -1rem;
     font-size: 1.5rem;
     $rotate: rotate(12deg);
     transform-origin: center;
     animation: pulse .5s alternate infinite cubic-bezier(.4, 0, .6, 1);
-    background: url('../../images/holy-toledo.svg') center / contain no-repeat;
+    background: url('../../images/numbers-guy.svg') center / contain no-repeat;
 
     @keyframes pulse {
       from {
@@ -63,7 +63,8 @@
   }
 
   .signature {
-    width: 8rem;
+    width: 4rem;
+    margin-top: 2rem;
     opacity: .2;
 
     font-size: .8rem;

@@ -1,4 +1,4 @@
-import {ChartOptions, Plugin} from 'chart.js'
+import type {ChartOptions, Plugin} from 'chart.js'
 import {originalDatasets} from './utils'
 
 const font = {
@@ -31,17 +31,24 @@ export const common = (id: string, tiny: boolean): ChartOptions => ({
       color: 'black',
       font,
       formatter: (value, context) => {
+        const barsAmount = originalDatasets[id][context.dataset.label as string].data.length
         const totalAmount = originalDatasets[id][context.dataset.label as string].data[context.dataIndex]
         let label = context.dataset.label as string
-        if (label.length > 20) {
+        if (label.length >= (80 / barsAmount)) {
           const insertIndex = label.indexOf('/') + 1
-          label = label.slice(0, insertIndex) + '\n' + label.slice(insertIndex)
+          if (insertIndex > 0) {
+            if (value < 0.06) {
+              label = label.slice(0, insertIndex - 1) + '…'
+            } else {
+              label = label.slice(0, insertIndex) + '\n' + label.slice(insertIndex)
+            }
+          }
         }
         const roundedPercentageValue = tiny
           ? Math.round(Number(value) * 100)
           : Math.round(Number(value) * 100 * 100) / 100
         const percentage = roundedPercentageValue + '%'
-        if (!value || value === 0) return ''
+        if (!value || value < .01) return ''
         else if (tiny || value < .05) return percentage
         else if (value < .10) return label + '\n' + percentage
         else return label + '\n' + percentage + '\n' + totalAmount
@@ -56,7 +63,8 @@ export const stackedBarChart = (id: string, tiny: boolean = false): ChartOptions
     x: {
       stacked: true,
       ticks: {
-        callback(value: number) {
+        callback(value_: number | string) {
+          const value = Number(value_)
           if (tiny) {
             const [month, year] = this.getLabelForValue(value).split(' ')
             return month.substring(0, 3) + ' \'' + year.substring(2, 4)

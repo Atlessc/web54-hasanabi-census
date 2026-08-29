@@ -3,7 +3,7 @@ import createEmblaCarousel from 'embla-carousel-solid'
 import {default as cn} from 'classnames'
 import {BsBoxArrowInLeft, BsBoxArrowInRight} from 'solid-icons/bs'
 import {FaSolidCaretDown} from 'solid-icons/fa'
-import {createMediaQuery, makeMediaQueryListener} from '@solid-primitives/media'
+import {createMediaQuery} from '@solid-primitives/media'
 import {HomeSlide} from '../Slide'
 
 import styles from './slider.module.scss'
@@ -37,7 +37,17 @@ export default function Slider() {
         navEmblaApi()?.scrollTo(emblaApi()?.selectedScrollSnap() ?? 0)
       })
     }
+    const isolateArrowButtonEvent = (e: Event) => {
+      if (!(e.target instanceof Element)) return
+      if (!e.target.closest('button')?.classList.contains(styles.arrow)) return
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    window.addEventListener('mousedown', isolateArrowButtonEvent)
+    window.addEventListener('pointerdown', isolateArrowButtonEvent)
+    window.addEventListener('touchstart', isolateArrowButtonEvent)
   })
+
 
   const isSmall = createMediaQuery("(max-width: 900px)")
   const [navExpanded, setNavExpanded] = createSignal(false)
@@ -94,18 +104,18 @@ export default function Slider() {
     <div class={styles.slider} ref={emblaRef}>
       <div class={styles.container}>
         <div class={styles.slide}><HomeSlide /></div>
-        {barChartSlides.map(({name, fileUrl, note}, index) => (
+        {barChartSlides.map(({name, fileUrl, ...additional}) => (
           <div class={styles.slide}>
-            <BarChartSlide dataFile={fileUrl} title={name} note={note} />
+            <BarChartSlide dataFile={fileUrl} title={name} {...additional} />
           </div>
         ))}
       </div>
       <button class={cn(styles.arrow, styles.next, !canScrollNext() && styles.hide)}
-              onclick={() => emblaApi()?.scrollNext()}>
+        onclick={() => emblaApi()?.scrollNext()}>
         <BsBoxArrowInRight />
       </button>
       <button class={cn(styles.arrow, styles.prev, !canScrollPrev() && styles.hide)}
-              onclick={() => emblaApi()?.scrollPrev()}>
+        onclick={() => emblaApi()?.scrollPrev()}>
         <BsBoxArrowInLeft />
       </button>
     </div>
@@ -113,7 +123,7 @@ export default function Slider() {
       <nav class={styles.nav}>
         {allSlides.map(({name: slide}, index) => <>
             <span class={cn(styles.item, slideIndex() === index && styles.selected)}
-                  onclick={() => emblaApi()?.scrollTo(index)}>
+              onclick={() => emblaApi()?.scrollTo(index)}>
               {slide}
             </span>
         </>)}

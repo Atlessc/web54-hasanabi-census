@@ -1,4 +1,4 @@
-import {ChartData, ChartDataset} from 'chart.js'
+import type {ChartData, ChartDataset} from 'chart.js'
 import cloneDeep from 'lodash.clonedeep'
 
 export function normaliseArray(array: number[]) {

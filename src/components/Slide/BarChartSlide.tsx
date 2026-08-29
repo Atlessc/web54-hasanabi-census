@@ -1,4 +1,4 @@
-import {createEffect, createMemo, createSignal, JSX, onMount} from 'solid-js'
+import {createMemo, createSignal, JSX, onMount, Show} from 'solid-js'
 import {Bar} from 'solid-chartjs'
 import {Chart, ChartData, Colors, Legend, LinearScale, Title, Tooltip} from 'chart.js'
 import DataLabels from 'chartjs-plugin-datalabels'
@@ -8,13 +8,15 @@ import {createWindowSize} from '@solid-primitives/resize-observer'
 import styles from './slide.module.scss'
 import {plugins, stackedBarChart} from './options'
 import getStackedBarData from './getStackedBarData'
-import {colorsHeight} from './colors'
 
-export default function BarChartSlide({dataFile, title, note}: {
+interface BarChartSlideProps {
   dataFile: string,
   title: string,
   note?: string | JSX.Element
-}) {
+  colors?: string[]
+}
+
+export default function BarChartSlide(props: BarChartSlideProps) {
   const [data, setData] = createSignal<ChartData>(null!)
   const size = createWindowSize()
   const isMedium = createMediaQuery("(max-width: 1200px)")
@@ -31,28 +33,15 @@ export default function BarChartSlide({dataFile, title, note}: {
 
   onMount(() => {
     Chart.register(Title, Tooltip, Legend, Colors, DataLabels, LinearScale)
-    // PogO hardcoded
-    if (title === 'Height') {
-      getStackedBarData(dataFile, title)
-        .then(data => {
-          let i = 0
-          for (const dataset of data.datasets) {
-            dataset.backgroundColor = colorsHeight[i++]
-          }
-          return data
-        })
-        .then(setData)
-    } else {
-      getStackedBarData(dataFile, title).then(setData)
-    }
+    getStackedBarData(props.dataFile, props.title, props.colors).then(setData)
   })
 
   return <>
     <div class={styles.slide}>
-      <h2>{title}</h2>
-      {note && <p>{note}</p>}
-      <Bar class={styles.chart} data={data()} options={stackedBarChart(title, isTiny())} plugins={plugins}
-           height={canvasHeight()} width={canvasWidth()} />
+      <h2>{props.title}</h2>
+      <Show when={props.note}><p>{props.note}</p></Show>
+      <Bar class={styles.chart} data={data()} options={stackedBarChart(props.title, isTiny())} plugins={plugins}
+        height={canvasHeight()} width={canvasWidth()} />
     </div>
   </>
 }

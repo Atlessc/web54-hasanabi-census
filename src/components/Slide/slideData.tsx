@@ -19,6 +19,7 @@ import gamingFile from "../../data/gaming.csv"
 import watchedFile from "../../data/watched.csv"
 
 import styles from './slide.module.scss'
+import {colorsAge, colorsHeight} from './colors'
 
 const madge = 'https://cdn.betterttv.net/emote/6083d2f139b5010444d0540e/3x.webp'
 
@@ -26,11 +27,13 @@ interface SlideData {
   name: string,
   fileUrl: string
   note?: string | JSX.Element
+  colors?: string[]
 }
 
 export const barChartSlides: SlideData[] = [{
   name: 'Age',
   fileUrl: ageFile,
+  // colors: colorsAge,
 }, {
   name: 'Gender',
   fileUrl: genderFile,
@@ -50,6 +53,7 @@ export const barChartSlides: SlideData[] = [{
   name: 'Height',
   fileUrl: heightFile,
   note: <>(Categories changed for 2023 <img src={madge} class={styles.inlineIcon} alt={''} /> )</>,
+  colors: colorsHeight,
 }, {
   name: 'Trans Chatters',
   fileUrl: transFile,
