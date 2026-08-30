@@ -4,8 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "dev": "NODE_ENV=development node build.js",
     "build": "node build.js",
-    "watch": "NODE_ENV=watch node build.js"
+    "watch": "NODE_ENV=watch node build.js",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +33,7 @@
     "solid-js": "^1.8.21"
   },
   "devDependencies": {
-    "@types/lodash.clonedeep": "^4.5.9"
+    "@types/lodash.clonedeep": "^4.5.9",
+    "typescript": "^5.9.2"
   }
 }
