@@ -21,10 +21,11 @@ import watchedFile from '../../data/watched.csv'
 import styles from './slide.module.scss'
 import {colorsHeight} from './colors'
 
-const madge = 'https://cdn.betterttv.net/emote/6083d2f139b5010444d0540e/3x.webp'
+const madge =
+  'https://cdn.betterttv.net/emote/6083d2f139b5010444d0540e/3x.webp'
 
 export type CensusCategoryId =
-  | 'cover'
+  | 'home'
   | 'age'
   | 'gender'
   | 'political-ideology'
@@ -54,84 +55,115 @@ export interface SlideData extends CensusCategory {
   colors?: string[]
 }
 
-export const coverCategory: CensusCategory = {
-  id: 'cover',
-  name: 'Cover',
+export const homeCategory: CensusCategory = {
+  id: 'home',
+  name: 'Home',
 }
 
-export const barChartSlides: SlideData[] = [{
-  id: 'age',
-  name: 'Age',
-  fileUrl: ageFile,
-}, {
-  id: 'gender',
-  name: 'Gender',
-  fileUrl: genderFile,
-}, {
-  id: 'political-ideology',
-  name: 'Political Ideology',
-  fileUrl: politicsFile,
-}, {
-  id: 'ethnicity',
-  name: 'Ethnicity',
-  fileUrl: raceFile,
-}, {
-  id: 'religion',
-  name: 'Religion',
-  fileUrl: religionFile,
-}, {
-  id: 'sexuality',
-  name: 'Sexuality',
-  fileUrl: sexualityFile,
-}, {
-  id: 'height',
-  name: 'Height',
-  fileUrl: heightFile,
-  note: <>(Categories changed for 2023 <img src={madge} class={styles.inlineIcon} alt={''} /> )</>,
-  colors: colorsHeight,
-}, {
-  id: 'trans-chatters',
-  name: 'Trans Chatters',
-  fileUrl: transFile,
-}, {
-  id: 'location',
-  name: 'Location',
-  fileUrl: locationFile,
-}, {
-  id: 'salary',
-  name: 'Salary',
-  fileUrl: salaryFile,
-}, {
-  id: 'education',
-  name: 'Education',
-  fileUrl: educationFile,
-}, {
-  id: 'vcard',
-  name: 'VCARD',
-  fileUrl: sexHaversFile,
-}, {
-  id: 'weebs',
-  name: 'Weebs',
-  fileUrl: weebFile,
-}, {
-  id: 'diet',
-  name: 'Diet',
-  fileUrl: eatingFile,
-}, {
-  id: 'neurodiversity',
-  name: 'Neurodiversity',
-  fileUrl: neurodivergenceFile,
-}, {
-  id: 'gayming-frogs',
-  name: 'Gayming Frogs',
-  fileUrl: gamingFile,
-}, {
-  id: 'years-watched',
-  name: 'Years Watched',
-  fileUrl: watchedFile,
-}]
+export const barChartSlides: SlideData[] = [
+  {
+    id: 'age',
+    name: 'Age',
+    fileUrl: ageFile,
+  },
+  {
+    id: 'gender',
+    name: 'Gender',
+    fileUrl: genderFile,
+  },
+  {
+    id: 'political-ideology',
+    name: 'Political Ideology',
+    fileUrl: politicsFile,
+  },
+  {
+    id: 'ethnicity',
+    name: 'Ethnicity',
+    fileUrl: raceFile,
+  },
+  {
+    id: 'religion',
+    name: 'Religion',
+    fileUrl: religionFile,
+  },
+  {
+    id: 'sexuality',
+    name: 'Sexuality',
+    fileUrl: sexualityFile,
+  },
+  {
+    id: 'height',
+    name: 'Height',
+    fileUrl: heightFile,
+    note: (
+      <>
+        (Categories changed for 2023{' '}
+        <img
+          src={madge}
+          class={styles.inlineIcon}
+          alt=""
+        />{' '}
+        )
+      </>
+    ),
+    colors: colorsHeight,
+  },
+  {
+    id: 'trans-chatters',
+    name: 'Trans Chatters',
+    fileUrl: transFile,
+  },
+  {
+    id: 'location',
+    name: 'Location',
+    fileUrl: locationFile,
+  },
+  {
+    id: 'salary',
+    name: 'Salary',
+    fileUrl: salaryFile,
+  },
+  {
+    id: 'education',
+    name: 'Education',
+    fileUrl: educationFile,
+  },
+  {
+    id: 'vcard',
+    name: 'VCARD',
+    fileUrl: sexHaversFile,
+  },
+  {
+    id: 'weebs',
+    name: 'Weebs',
+    fileUrl: weebFile,
+  },
+  {
+    id: 'diet',
+    name: 'Diet',
+    fileUrl: eatingFile,
+  },
+  {
+    id: 'neurodiversity',
+    name: 'Neurodiversity',
+    fileUrl: neurodivergenceFile,
+  },
+  {
+    id: 'gayming-frogs',
+    name: 'Gayming Frogs',
+    fileUrl: gamingFile,
+  },
+  {
+    id: 'years-watched',
+    name: 'Years Watched',
+    fileUrl: watchedFile,
+  },
+]
 
 export const censusCategories: CensusCategory[] = [
-  coverCategory,
-  ...barChartSlides.map(({id, name}) => ({id, name})),
+  homeCategory,
+  ...barChartSlides.map(({id, name}) => ({
+    id,
+    name,
+  })),
 ]
