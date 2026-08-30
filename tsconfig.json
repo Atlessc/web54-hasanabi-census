@@ -1,22 +1,29 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "sourceMap": true,
-    "allowJs": true,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "moduleResolution": "node",
+
+    "allowJs": true,
+    "noEmit": true,
+    "isolatedModules": true,
+
     "esModuleInterop": true,
-    "rootDir": "src",
+    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  }
+
+    "rootDir": "src",
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "docs"]
 }
