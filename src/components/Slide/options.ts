@@ -78,6 +78,8 @@ export const stackedBarChart = (id: string, tiny: boolean = false): ChartOptions
       }
     },
     y: {
+      min: 1,
+      max: 1,
       stacked: true,
       ticks: {
         display: !tiny,
