@@ -3,7 +3,7 @@ import {JSX} from 'solid-js'
 import ageFile from "../../data/age.csv"
 import genderFile from "../../data/gender.csv"
 import politicsFile from "../../data/politics.csv"
-import raceFile from "../../data/race.csv"
+import ethnicityFile from "../../data/ethnicity.csv"
 import religionFile from "../../data/religion.csv"
 import sexualityFile from "../../data/sexuality.csv"
 import heightFile from "../../data/height.csv"
@@ -33,7 +33,7 @@ interface SlideData {
 export const barChartSlides: SlideData[] = [{
   name: 'Age',
   fileUrl: ageFile,
-  // colors: colorsAge,
+  colors: colorsAge,
 }, {
   name: 'Gender',
   fileUrl: genderFile,
@@ -42,7 +42,7 @@ export const barChartSlides: SlideData[] = [{
   fileUrl: politicsFile,
 }, {
   name: 'Ethnicity',
-  fileUrl: raceFile,
+  fileUrl: ethnicityFile,
 }, {
   name: 'Religion',
   fileUrl: religionFile,
