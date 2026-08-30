@@ -17,6 +17,9 @@ import eatingFile from "../../data/eating.csv"
 import neurodivergenceFile from "../../data/neurodivergence.csv"
 import gamingFile from "../../data/gaming.csv"
 import watchedFile from "../../data/watched.csv"
+import activismFile from "../../data/activism.csv"
+import housingFile from "../../data/housing.csv"
+import discoveryFile from "../../data/discovery.csv"
 
 import styles from './slide.module.scss'
 import {colorsAge, colorsHeight} from './colors'
@@ -84,4 +87,13 @@ export const barChartSlides: SlideData[] = [{
 }, {
   name: 'Years Watched',
   fileUrl: watchedFile,
+}, {
+  name: 'Political Activism',
+  fileUrl: activismFile,
+}, {
+  name: 'Housing',
+  fileUrl: housingFile,
+}, {
+  name: 'Discovery',
+  fileUrl: discoveryFile,
 }]

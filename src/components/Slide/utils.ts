@@ -3,7 +3,7 @@ import cloneDeep from 'lodash.clonedeep'
 
 export function normaliseArray(array: number[]) {
   const sum = array.reduce((a, b) => a + b, 0)
-  return array.map(number => number / sum)
+  return array.map(number => Math.round((number / sum) * 10000) / 10000)
 }
 
 export const originalDatasets: Record<string, Record<string, ChartDataset>> = {}
