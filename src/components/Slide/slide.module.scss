@@ -1,13 +1,16 @@
 .slide {
   justify-self: start;
+
   height: 100%;
-  padding-bottom: 118px;
+  width: 100%;
+
+  padding: 1rem 0;
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
+  min-height: 0;
 
   font-size: 18px;
 
@@ -15,72 +18,165 @@
     margin: 0;
   }
 
-  &.home > * {
-    margin: .5rem 0;
+  &.home {
+    justify-content: center;
+    align-items: center;
+
+    > * {
+      margin: .5rem 0;
+    }
   }
 
-  h1, h2, h3 {
-    font-family: 'Archivo', sans-serif;
+  h1,
+  h2,
+  h3 {
+    font-family:
+      'Archivo',
+      sans-serif;
   }
 
   h1 {
     position: relative;
+
     margin-top: 2rem;
+
     font-size: 5rem;
+
     color: transparent;
 
-    background: url('../../images/title.svg') center / contain no-repeat;
+    background:
+      url('../../images/title.svg')
+      center / contain
+      no-repeat;
   }
 
-  @media screen and (max-width: 1600px) {
+  @media screen and
+    (max-width: 1600px) {
     h1 {
-      font-size: min(5rem, calc(12vw));
+      font-size:
+        min(
+          5rem,
+          calc(12vw)
+        );
 
       word-wrap: normal;
       text-align: center;
-      background-image: url('../../images/title_stacked.svg');
+
+      background-image:
+        url(
+          '../../images/title_stacked.svg'
+        );
     }
   }
 
   .comment {
     position: absolute;
+
     right: -2rem;
     top: -1rem;
+
     font-size: 1.5rem;
+
     $rotate: rotate(12deg);
+
     transform-origin: center;
-    animation: pulse .5s alternate infinite cubic-bezier(.4, 0, .6, 1);
-    background: url('../../images/numbers-guy.svg') center / contain no-repeat;
+
+    animation:
+      pulse
+      .5s
+      alternate
+      infinite
+      cubic-bezier(
+        .4,
+        0,
+        .6,
+        1
+      );
+
+    background:
+      url(
+        '../../images/numbers-guy.svg'
+      )
+      center / contain
+      no-repeat;
 
     @keyframes pulse {
       from {
-        transform: $rotate scale(.95);
+        transform:
+          $rotate
+          scale(.95);
       }
+
       to {
-        transform: $rotate scale(1.05);
+        transform:
+          $rotate
+          scale(1.05);
       }
     }
   }
 
   .signature {
     width: 4rem;
+
     margin-top: 2rem;
+
     opacity: .2;
 
     font-size: .8rem;
     text-align: right;
+
     color: white;
   }
 
   .inlineIcon {
     height: 1.4em;
+
     vertical-align: middle;
 
     position: relative;
+
     bottom: .2em;
   }
+}
 
-  canvas {
-    margin-top: 1rem;
+.slideHeader {
+  flex: 0 0 auto;
+
+  width: 100%;
+
+  padding: 0 1rem .65rem;
+  box-sizing: border-box;
+
+  text-align: center;
+
+  h2 {
+    margin: 0;
+
+    font-size: 1.8rem;
   }
+
+  p {
+    margin:
+      .25rem
+      0
+      0;
+  }
+}
+
+.chartFrame {
+  flex: 1 1 auto;
+
+  width: 100%;
+
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.chart {
+  display: block;
 }
