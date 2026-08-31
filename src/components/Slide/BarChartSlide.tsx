@@ -6,7 +6,9 @@ import {
   onMount,
   Show,
 } from 'solid-js'
+
 import {Bar} from 'solid-chartjs'
+
 import {
   Chart,
   ChartData,
@@ -16,14 +18,24 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
+
 import DataLabels from 'chartjs-plugin-datalabels'
-import {createMediaQuery} from '@solid-primitives/media'
+
+import {
+  createMediaQuery,
+} from '@solid-primitives/media'
+
+import {
+  createWindowSize,
+} from '@solid-primitives/resize-observer'
 
 import styles from './slide.module.scss'
+
 import {
   plugins,
   stackedBarChart,
 } from './options'
+
 import getStackedBarData from './getStackedBarData'
 
 interface BarChartSlideProps {
@@ -33,68 +45,74 @@ interface BarChartSlideProps {
   colors?: string[]
 }
 
-interface FrameSize {
-  width: number
-  height: number
-}
-
 export default function BarChartSlide(
   props: BarChartSlideProps,
 ) {
   const [data, setData] =
     createSignal<ChartData>(null!)
 
-  const [frameSize, setFrameSize] =
-    createSignal<FrameSize>({
-      width: 1,
-      height: 1,
-    })
+  /*
+   * Width comes from the browser viewport,
+   * just like the original application.
+   *
+   * This is intentionally NOT measured from
+   * chartFrame because chart contents must
+   * never be able to influence their own
+   * horizontal size.
+   */
+  const windowSize =
+    createWindowSize()
 
-  const isMedium = createMediaQuery(
-    '(max-width: 1200px)',
-  )
+  /*
+   * Height still comes from the actual
+   * remaining Explorer visualization area.
+   */
+  const [frameHeight, setFrameHeight] =
+    createSignal(1)
 
-  const isSmall = createMediaQuery(
-    '(max-width: 700px)',
-  )
+  const isMedium =
+    createMediaQuery(
+      '(max-width: 1200px)',
+    )
 
-  const isTiny = createMediaQuery(
-    '(max-width: 600px)',
-  )
+  const isSmall =
+    createMediaQuery(
+      '(max-width: 700px)',
+    )
+
+  const isTiny =
+    createMediaQuery(
+      '(max-width: 600px)',
+    )
 
   let chartFrame:
     | HTMLDivElement
     | undefined
 
-  const canvasWidth = createMemo(() => {
-    const width = frameSize().width
+  const canvasWidth =
+    createMemo(() => {
+      const width =
+        windowSize.width
 
-    if (isSmall()) {
+      if (isSmall()) {
+        return Math.max(
+          1,
+          width - 36,
+        )
+      }
+
+      if (isMedium()) {
+        return Math.max(
+          1,
+          width * .8,
+        )
+      }
+
       return Math.max(
         1,
-        width - 36,
+        width * .6,
       )
-    }
-
-    if (isMedium()) {
-      return Math.max(
-        1,
-        width * .8,
-      )
-    }
-
-    return Math.max(
-      1,
-      width * .6,
-    )
-  })
-
-  const canvasHeight = createMemo(() =>
-    Math.max(
-      1,
-      frameSize().height,
-    ),
-  )
+    })
 
   onMount(() => {
     Chart.register(
@@ -112,21 +130,34 @@ export default function BarChartSlide(
       props.colors,
     ).then(setData)
 
-    if (!chartFrame) return
+    if (!chartFrame) {
+      return
+    }
 
+    /*
+     * Observe HEIGHT ONLY.
+     *
+     * Width must never come from this element
+     * or we recreate the circular sizing bug.
+     */
     const resizeObserver =
-      new ResizeObserver((entries) => {
-        const entry = entries[0]
+      new ResizeObserver(
+        entries => {
+          const entry =
+            entries[0]
 
-        if (!entry) return
+          if (!entry) {
+            return
+          }
 
-        setFrameSize({
-          width:
-            entry.contentRect.width,
-          height:
-            entry.contentRect.height,
-        })
-      })
+          setFrameHeight(
+            Math.max(
+              1,
+              entry.contentRect.height,
+            ),
+          )
+        },
+      )
 
     resizeObserver.observe(
       chartFrame,
@@ -139,11 +170,17 @@ export default function BarChartSlide(
 
   return (
     <div class={styles.slide}>
-      <div class={styles.slideHeader}>
-        <h2>{props.title}</h2>
+      <div
+        class={styles.slideHeader}
+      >
+        <h2>
+          {props.title}
+        </h2>
 
         <Show when={props.note}>
-          <p>{props.note}</p>
+          <p>
+            {props.note}
+          </p>
         </Show>
       </div>
 
@@ -151,17 +188,28 @@ export default function BarChartSlide(
         class={styles.chartFrame}
         ref={chartFrame}
       >
-        <Bar
-          class={styles.chart}
-          data={data()}
-          options={stackedBarChart(
-            props.title,
-            isTiny(),
-          )}
-          plugins={plugins}
-          height={canvasHeight()}
-          width={canvasWidth()}
-        />
+        <div
+          class={styles.chartStage}
+          style={{
+            width:
+              `${canvasWidth()}px`,
+
+            height:
+              `${frameHeight()}px`,
+          }}
+        >
+          <Bar
+            class={styles.chart}
+            data={data()}
+            options={
+              stackedBarChart(
+                props.title,
+                isTiny(),
+              )
+            }
+            plugins={plugins}
+          />
+        </div>
       </div>
     </div>
   )

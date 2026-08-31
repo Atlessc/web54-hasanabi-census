@@ -3,7 +3,7 @@ import {JSX} from 'solid-js'
 import ageFile from '../../data/age.csv'
 import genderFile from '../../data/gender.csv'
 import politicsFile from '../../data/politics.csv'
-import raceFile from '../../data/race.csv'
+import ethnicityFile from '../../data/ethnicity.csv'
 import religionFile from '../../data/religion.csv'
 import sexualityFile from '../../data/sexuality.csv'
 import heightFile from '../../data/height.csv'
@@ -17,9 +17,12 @@ import eatingFile from '../../data/eating.csv'
 import neurodivergenceFile from '../../data/neurodivergence.csv'
 import gamingFile from '../../data/gaming.csv'
 import watchedFile from '../../data/watched.csv'
+import activismFile from '../../data/activism.csv'
+import housingFile from '../../data/housing.csv'
+import discoveryFile from '../../data/discovery.csv'
 
 import styles from './slide.module.scss'
-import {colorsHeight} from './colors'
+import {colorsAge, colorsHeight} from './colors'
 
 const madge =
   'https://cdn.betterttv.net/emote/6083d2f139b5010444d0540e/3x.webp'
@@ -43,6 +46,9 @@ export type CensusCategoryId =
   | 'neurodiversity'
   | 'gayming-frogs'
   | 'years-watched'
+  | 'political-activism'
+  | 'housing'
+  | 'discovery'
 
 export interface CensusCategory {
   id: CensusCategoryId
@@ -65,6 +71,7 @@ export const barChartSlides: SlideData[] = [
     id: 'age',
     name: 'Age',
     fileUrl: ageFile,
+    colors: colorsAge,
   },
   {
     id: 'gender',
@@ -79,7 +86,7 @@ export const barChartSlides: SlideData[] = [
   {
     id: 'ethnicity',
     name: 'Ethnicity',
-    fileUrl: raceFile,
+    fileUrl: ethnicityFile,
   },
   {
     id: 'religion',
@@ -157,6 +164,21 @@ export const barChartSlides: SlideData[] = [
     id: 'years-watched',
     name: 'Years Watched',
     fileUrl: watchedFile,
+  },
+  {
+    id: 'political-activism',
+    name: 'Political Activism',
+    fileUrl: activismFile,
+  },
+  {
+    id: 'housing',
+    name: 'Housing',
+    fileUrl: housingFile,
+  },
+  {
+    id: 'discovery',
+    name: 'Discovery',
+    fileUrl: discoveryFile,
   },
 ]
 

@@ -13,10 +13,10 @@ interface CategoryRailProps {
 
 export default function CategoryRail(props: CategoryRailProps) {
   const [emblaRef, emblaApi] = createEmblaCarousel(() => ({
-    dragFree: true,
-    containScroll: 'trimSnaps',
-    align: 'center',
-  }))
+  dragFree: true,
+  containScroll: false,
+  align: 'center',
+}))
   const [canScrollPrev, setCanScrollPrev] = createSignal(false)
   const [canScrollNext, setCanScrollNext] = createSignal(false)
 

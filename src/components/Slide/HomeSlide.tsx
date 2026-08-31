@@ -12,8 +12,8 @@ export default function HomeSlide() {
         The&nbsp;HasanAbi{isLMedium() ? <br/> : ' '}Census
         <span class={styles.comment}>Holy Toledo!</span>
       </h1>
-      <p><i>with data from June 2020 to August 2025</i></p>
-      <p><i>Thank you littlebear36 for documenting census data</i></p>
+      <p style="text-align: center;"><i>with data from June 2020 to August 2026</i></p>
+      <p style="text-align: center;"><i>Thank you littlebear36 for documenting census data</i></p>
       <Signature class={styles.signature} classSvg={''} />
     </div>
   </>

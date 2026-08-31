@@ -2,65 +2,76 @@
 
 ## Overview
 
-This document summarizes the work completed on the HasanAbi Census project during the 2026 modernization and Census Explorer update.
+This document summarizes the modernization and Census Explorer work contributed to the HasanAbi Census project in 2026.
 
-The original project, visual language, census data presentation, SolidJS architecture, Chart.js visualizations, SCSS styling approach, and initial application concept were created by the original author, **[brilliantdrink](https://github.com/brilliantdrink)**.
+The original application concept, census presentation, data work, visual language, SolidJS architecture, Chart.js visualizations, SCSS styling approach, and project direction belong to the original project and its author, **[brilliantdrink](https://github.com/brilliantdrink)**.
 
-The work documented below focuses on maintaining that original project while improving its security, development workflow, type safety, navigation, responsive layout, accessibility, and data-exploration interface.
+This contribution is intended to modernize and extend the existing project without replacing its framework, styling system, charting library, or overall character.
+
+The contribution focuses on:
+
+- dependency and security maintenance
+- local development workflow improvements
+- TypeScript modernization
+- repository hygiene
+- a new Census Explorer navigation shell
+- responsive layout improvements
+- chart sizing fixes
+- accessibility and interaction improvements
+- explicit original-project attribution
+
+During preparation of the upstream pull request, the contribution was reconciled against the latest upstream `main` so the original author's new August 2026 census work and chart fixes remain intact.
 
 ---
 
 ## 1. Dependency and Security Modernization
 
-### Dependency audit and remediation
+The npm dependency tree was reviewed and updated with an emphasis on resolving known vulnerabilities without forcing unnecessary breaking upgrades.
 
-Reviewed the existing npm dependency tree and addressed reported package vulnerabilities without using a destructive forced upgrade path.
+### Work completed
 
-The update work included:
-
-- Auditing the existing dependency tree.
-- Avoiding `npm audit fix --force` to prevent unnecessary breaking changes.
-- Updating vulnerable or outdated dependencies to compatible modern releases.
-- Updating the esbuild toolchain.
-- Updating `esbuild-sass-plugin`.
-- Updating SolidJS-compatible dependencies where resolved by the package lock.
-- Removing deprecated dependency usage where applicable.
-- Regenerating and preserving `package-lock.json`.
-- Re-running the npm security audit after dependency changes.
+- Audited the existing npm dependency tree.
+- Avoided destructive `npm audit fix --force` behavior.
+- Updated vulnerable or outdated packages to compatible modern versions.
+- Updated the esbuild toolchain.
+- Updated `esbuild-sass-plugin`.
+- Updated compatible SolidJS-related dependencies through the lockfile.
+- Regenerated `package-lock.json`.
+- Re-ran dependency security checks after the updates.
 
 ### Result
 
-The dependency tree was brought to:
+The dependency audit reached:
 
 ```text
 found 0 vulnerabilities
 ```
 
-This removed the previously reported security findings while keeping the project on its existing SolidJS + esbuild architecture.
+The project remains on the existing SolidJS + esbuild architecture.
 
 ---
 
 ## 2. Development and Build Workflow Improvements
 
-The original project used a custom esbuild build process. Rather than replacing it with Vite or another framework toolchain, the existing architecture was preserved and improved.
+The project already used a custom esbuild build process. That architecture was kept and extended instead of replacing it with Vite or another bundler.
 
-### Added development workflow
+### Development mode
 
-The custom `build.js` pipeline was expanded to support a real local development mode.
+The custom `build.js` workflow was expanded to support a proper development mode using esbuild's existing APIs.
 
-Added:
+Added behavior includes:
 
-- esbuild `context()` development workflow.
-- file watching.
-- automatic rebuilds.
-- local static serving from `docs/`.
-- browser live reload through esbuild's `/esbuild` Server-Sent Events endpoint.
-- development source maps.
-- development-specific build behavior.
-- production-only minification and tree shaking.
-- a first rebuild before serving so `docs/index.html` exists before the browser requests it.
+- esbuild `context()` workflow
+- file watching
+- automatic rebuilds
+- local static serving
+- browser live reload through esbuild's `/esbuild` Server-Sent Events endpoint
+- development source maps
+- development-specific build behavior
+- production-only minification and tree shaking
+- an initial build before serving so the generated application exists before the browser requests it
 
-The development server now runs at:
+The local development server runs at:
 
 ```text
 http://127.0.0.1:8000
@@ -68,7 +79,7 @@ http://127.0.0.1:8000
 
 ### npm scripts
 
-The project now exposes dedicated commands for development, production builds, watching, and type checking:
+The project now exposes clear development, build, watch, and type-check commands:
 
 ```json
 {
@@ -79,21 +90,20 @@ The project now exposes dedicated commands for development, production builds, w
 }
 ```
 
-### Existing behavior preserved
+### Existing architecture intentionally preserved
 
-The modernization intentionally retained:
+The contribution continues to use:
 
-- SolidJS.
-- esbuild.
-- SCSS.
-- CSS Modules.
-- PostCSS.
-- Autoprefixer.
-- existing font handling.
-- existing CSV asset loading.
-- existing image/audio/text asset handling.
-- generated `docs/` output.
-- the existing GitHub Pages-oriented build structure.
+- SolidJS
+- esbuild
+- SCSS
+- CSS Modules
+- PostCSS
+- Autoprefixer
+- Chart.js
+- Embla Carousel
+- the existing asset-loader approach
+- the existing generated-site build model
 
 ---
 
@@ -101,30 +111,27 @@ The modernization intentionally retained:
 
 TypeScript was added as an explicit development dependency and the compiler configuration was modernized for the current SolidJS/esbuild project.
 
-### TypeScript configuration improvements
+### Compiler configuration improvements
 
-The updated configuration includes:
+The updated TypeScript configuration includes:
 
-- `ES2020` target.
-- `ESNext` modules.
-- bundler-style module resolution.
-- DOM and iterable DOM libraries.
-- SolidJS JSX configuration.
-- strict type checking.
-- `noImplicitReturns`.
-- `isolatedModules`.
-- `noEmit`.
-- synthetic default import support.
-- consistent file-name casing enforcement.
-- library type-check skipping where appropriate.
-- explicit source inclusion.
-- generated `docs/` exclusion.
+- `ES2020` target
+- `ESNext` modules
+- bundler-style module resolution
+- DOM and iterable DOM libraries
+- SolidJS JSX configuration
+- strict type checking
+- `noImplicitReturns`
+- `isolatedModules`
+- `noEmit`
+- synthetic default import support
+- consistent filename casing enforcement
+- source-only inclusion
+- generated output exclusion
 
 ### Asset module declarations
 
-TypeScript previously reported missing declarations for files that esbuild already knew how to load.
-
-Asset declarations were added for:
+TypeScript declarations were added for asset types already supported by the project's esbuild configuration:
 
 - `.module.scss`
 - `.scss`
@@ -139,46 +146,45 @@ Asset declarations were added for:
 - `.woff`
 - `.woff2`
 
-This aligned TypeScript's understanding of imported assets with the project's existing esbuild loaders.
+This aligns TypeScript's module resolution with assets the application already imports successfully at build time.
 
 ---
 
 ## 4. Repository Hygiene
 
-The repository ignore rules were expanded to cover common development artifacts while intentionally preserving files that belong in this project's source and deployment workflow.
+The repository ignore rules were expanded to cover common local-development artifacts.
 
-Added or clarified ignore coverage for:
+Added or clarified ignore coverage includes:
 
 - `node_modules/`
-- environment files.
-- logs.
-- macOS metadata.
-- editor and IDE files.
-- temporary directories.
-- caches.
-- coverage output.
-- TypeScript build metadata.
-- local tooling caches.
-- backup/original files.
+- environment files
+- logs
+- macOS metadata
+- editor and IDE files
+- temporary directories
+- caches
+- coverage output
+- TypeScript build metadata
+- local tooling caches
+- backup/original files
 
-### Intentionally preserved
+### Generated `docs/` output
 
-The following were intentionally **not** ignored:
+During preparation of the upstream PR, the original author changed upstream behavior so `docs/` is ignored as generated output.
 
-- `package-lock.json`
-- `docs/`
+That upstream choice is preserved.
 
-`package-lock.json` is required for reproducible dependency resolution.
+The pull request therefore does **not** include generated `docs/` files.
 
-`docs/` remains part of the project's existing generated GitHub Pages/build workflow.
+`package-lock.json` remains tracked for reproducible dependency resolution.
 
 ---
 
 ## 5. Census Explorer Application Shell
 
-The original full-screen slide presentation has been evolved into a more structured **Census Explorer** while preserving the original chart components and visual identity.
+The original full-screen slide presentation was reorganized into a more structured **Census Explorer** interface while retaining the original data visualizations.
 
-The new application structure is:
+The new shell is conceptually:
 
 ```text
 ┌──────────────────────────────────────────┐
@@ -194,13 +200,15 @@ The new application structure is:
 └──────────────────────────────────────────┘
 ```
 
+The charting system itself remains Chart.js-based and continues to use the existing census datasets and presentation logic.
+
 ---
 
 ## 6. Stable Census Category Model
 
 The slide registry was expanded so each census category has a stable machine-readable identifier in addition to its display name.
 
-Examples:
+Current identifiers include:
 
 ```text
 home
@@ -221,188 +229,186 @@ diet
 neurodiversity
 gayming-frogs
 years-watched
+political-activism
+housing
+discovery
 ```
 
-This provides a cleaner foundation for:
+This provides a cleaner basis for:
 
-- navigation state.
-- future URL routing.
-- view switching.
-- data comparisons.
-- category-specific controls.
+- navigation state
+- category synchronization
+- future URL state
+- future view switching
+- future comparisons
 
 ### Cover renamed to Home
 
-The original navigation label:
+The navigation label formerly presented as:
 
 ```text
 Cover
 ```
 
-was renamed to:
+is now:
 
 ```text
 Home
 ```
 
-The internal category identifier was also changed from `cover` to `home` so future navigation does not retain an obsolete slug.
+The internal identifier was also changed to `home` rather than retaining an obsolete `cover` slug.
 
 ---
 
 ## 7. Explorer Header
 
-A persistent top application header was added.
+A persistent application header was added.
 
 The header includes:
 
-- original HasanAbi Census title artwork.
-- Home navigation through the logo/title.
-- current census category control.
-- current visualization mode indicator.
-- responsive behavior for narrower screens.
+- the original HasanAbi Census title artwork
+- Home navigation through the title/logo
+- the current census category control
+- the current visualization-mode indicator
+- responsive behavior at narrower widths
 
-The original title SVG asset is reused rather than introducing replacement branding.
+The existing title SVG is reused rather than introducing replacement branding.
 
 ---
 
 ## 8. Custom Category Dropdown
 
-The browser-native category `<select>` was replaced with a custom SolidJS dropdown so the control matches the rest of the Census Explorer interface.
+The native browser category `<select>` was replaced with a custom SolidJS dropdown so its appearance and placement can match the Census Explorer interface.
 
-### Dropdown behavior
+### Behavior
 
-The new category selector:
+The custom dropdown:
 
-- visually matches the dark Census Explorer styling.
-- opens directly below its trigger.
-- displays all census categories.
-- highlights the currently selected category.
-- updates the main visualization carousel.
-- closes after selection.
-- closes when clicking outside the menu.
-- closes with `Escape`.
-- exposes menu state with appropriate ARIA attributes.
-- remains usable on smaller screens.
+- opens directly below the category control
+- uses the project's dark visual style
+- displays all census categories
+- highlights the current category
+- updates the main visualization carousel
+- closes after selection
+- closes when clicking outside
+- closes with `Escape`
+- exposes expanded/menu state through ARIA attributes
+- remains usable on narrower screens
 
-This avoids browser/operating-system-specific native select rendering and gives the project consistent control over dropdown placement and appearance.
+This removes platform-dependent native select rendering while keeping the control keyboard-accessible.
 
 ---
 
-## 9. Horizontal Category Slider
+## 9. Horizontal Category Rail
 
-The original large wrapped category list was replaced with a horizontal sliding navigation rail.
+The original large wrapped category navigation was replaced with a horizontal category rail.
 
-The previous navigation could consume multiple lines of screen space as category names wrapped across the bottom of the application.
+The new rail:
 
-The new category rail:
+- stays on a single horizontal row
+- uses the project's existing Embla Carousel dependency
+- supports drag/swipe interaction
+- includes previous/next rail controls
+- synchronizes with the active census slide
+- scrolls toward the currently selected category
+- highlights the active category
+- remains usable on mobile-width layouts
+- reads from the same centralized census category registry as the header
 
-- remains on one horizontal line.
-- uses the project's existing Embla carousel dependency.
-- supports dragging/swiping.
-- supports previous/next rail controls.
-- synchronizes with the selected census slide.
-- automatically moves toward the currently active category.
-- highlights the active category.
-- remains usable at mobile widths.
-- avoids duplicating the census category registry.
+### Navigation roles
 
-### Navigation hierarchy
-
-The two category controls intentionally serve different purposes:
+The interface now provides two complementary category-navigation methods.
 
 **Header dropdown**
 
-Fast navigation when the user already knows which census category they want.
+Useful for jumping directly to a known category.
 
-**Bottom category rail**
+**Horizontal category rail**
 
-Sequential browsing and discovery across the census categories.
+Useful for sequential browsing and discovering adjacent categories.
 
 ---
 
 ## 10. Main Carousel Refactor
 
-The original Slider component previously handled:
+The original `Slider` component previously owned several overlapping navigation systems.
 
-- the primary visualization carousel.
-- desktop category navigation.
-- mobile category navigation.
-- mobile expansion/collapse behavior.
-- multiple Embla instances.
-- keyboard navigation.
-- arrow controls.
+It handled:
 
-The component was simplified around the Census Explorer shell.
+- the primary visualization carousel
+- desktop category navigation
+- mobile category navigation
+- mobile expansion/collapse behavior
+- multiple carousel instances
+- keyboard navigation
+- visualization arrow controls
 
-The main carousel now primarily owns:
+The component was simplified around the Explorer shell.
 
-- slide selection.
-- previous/next state.
-- selected slide state.
-- synchronization with the header.
-- synchronization with the category rail.
-- left/right visualization navigation.
-- keyboard navigation.
+It now primarily owns:
 
-The old wrapped desktop navigation and separate vertical mobile category selector were removed in favor of the single responsive category rail.
+- selected slide state
+- previous/next state
+- synchronization with the header
+- synchronization with the category rail
+- left/right visualization navigation
+- keyboard navigation
+
+The old wrapped desktop navigation and separate vertical mobile navigation were replaced by the shared responsive category rail.
 
 ---
 
 ## 11. Existing Visualization Behavior Preserved
 
-The first Explorer phase intentionally avoided rewriting the existing census visualizations.
+The Explorer work intentionally does not replace the existing census chart system.
 
-Preserved:
+Preserved behavior includes:
 
-- existing Chart.js stacked bar charts.
-- original data files.
-- chart colors.
-- chart labels.
-- census date ordering.
-- data labels.
-- tooltips.
-- chart notes.
-- original Home presentation.
-- previous/next visualization navigation.
-- swipe/drag navigation.
-- keyboard category navigation.
+- Chart.js stacked bar charts
+- census data files
+- chart labels
+- chart colors
+- census date ordering
+- data labels
+- tooltips
+- chart notes
+- Home presentation
+- previous/next category navigation
+- swipe/drag navigation
+- keyboard category navigation
 
-This limited the initial Explorer work to application structure and navigation rather than changing the meaning or presentation logic of the census data.
+The initial Explorer phase changes application structure and navigation rather than redefining the census data.
 
 ---
 
 ## 12. Visualization Layout and Sizing Fixes
 
-The original visualization layout assumed the chart owned nearly the entire browser viewport.
+The original visualization layout assumed that the chart effectively owned the entire browser viewport.
 
-Once the new application shell introduced a header, category rail, and footer, that assumption caused charts to become taller than the space actually available to them.
+After adding the Explorer header, category rail, and footer, that assumption caused oversized charts and content clipping.
 
-Symptoms included:
+Observed symptoms included:
 
-- chart titles being pushed under the top header.
-- legends consuming excessive vertical space.
-- visualization content being clipped.
-- large charts overflowing the newly constrained Explorer viewport.
+- chart titles being pushed under the top header
+- legends consuming too much vertical space
+- visualization content being clipped
+- charts overflowing the actual visualization area
 
-### Removed obsolete bottom-navigation spacing
+### Legacy bottom-navigation spacing removed
 
-The original slide stylesheet contained:
+The original slide styles reserved fixed bottom space for the previous navigation system.
 
-```scss
-padding-bottom: 118px;
-```
+That fixed spacing became obsolete once the category rail received its own application-grid row.
 
-This had reserved space for the original bottom navigation.
+The old fixed bottom offset was removed.
 
-Because the category rail now occupies its own grid row, that fixed padding became obsolete and was removed.
+### Container-aware chart sizing
 
-### Container-based chart sizing
+`BarChartSlide` was updated so chart dimensions are derived from the actual available visualization container rather than the full browser viewport.
 
-`BarChartSlide` was updated so chart dimensions are based on the actual available visualization container rather than the entire browser window.
+A `ResizeObserver` measures the remaining chart area.
 
-A `ResizeObserver` now measures the remaining chart frame.
-
-The layout is effectively:
+The layout now behaves conceptually as:
 
 ```text
 Visualization Row
@@ -414,40 +420,40 @@ Visualization Row
     └── Chart
 ```
 
-This makes chart sizing aware of:
+Chart sizing therefore accounts for:
 
-- the top application header.
-- the chart title.
-- optional chart notes.
-- the category rail.
-- the footer.
-- browser resizing.
+- the top Explorer header
+- the chart title
+- optional chart notes
+- the horizontal category rail
+- the footer
+- browser resizing
 
 ---
 
 ## 13. Responsive Header Improvements
 
-The compact header breakpoint was adjusted so the desktop header does not remain active at widths where its controls no longer fit.
+The compact-header breakpoint was adjusted so desktop controls do not remain active at widths where they no longer fit.
 
 At narrower widths:
 
-- the redundant `Category` label can be hidden.
-- the current category remains visible.
-- the View control can be hidden where necessary.
-- the title/logo receives a smaller footprint.
-- the dropdown remains accessible.
+- redundant control labels can be hidden
+- the selected category remains visible
+- the View control can be hidden where necessary
+- the title/logo uses a smaller footprint
+- the category dropdown remains accessible
 
-This prevents header controls from overflowing or being clipped at medium viewport sizes.
+This prevents the header controls from clipping or extending beyond the viewport.
 
 ---
 
 ## 14. Keyboard and Interaction Safety
 
-Keyboard navigation was retained for the main visualization carousel.
+Keyboard category navigation remains available for the primary visualization carousel.
 
-Additional interaction safeguards were added so global left/right category navigation does not unexpectedly fire while the user is interacting with header controls.
+Global navigation handling was also tightened so interacting with form controls or buttons does not unexpectedly trigger carousel navigation.
 
-Interactive elements such as buttons, inputs, and selectors are excluded from global carousel keyboard navigation where appropriate.
+Interactive elements such as buttons, inputs, and selectors are excluded from global left/right navigation where appropriate.
 
 ---
 
@@ -455,25 +461,77 @@ Interactive elements such as buttons, inputs, and selectors are excluded from gl
 
 A dedicated footer was added beneath the category navigation.
 
-The footer credits the original project author:
+It credits the original project:
 
 ```text
 Original project by @brilliantdrink
 ```
 
-The attribution links to:
+and links to the original author's GitHub profile.
 
-```text
-https://github.com/brilliantdrink
-```
-
-This keeps authorship visible after the interface redesign and clearly distinguishes the modernization work from the original project.
+This keeps original authorship visible after the interface restructuring.
 
 ---
 
-## 16. Files Added
+## 16. Upstream 2026 Work Preserved During Reconciliation
 
-The Census Explorer work introduced new components including:
+The upstream pull-request branch was created from the latest original-project `main` and this contribution was applied on top of it.
+
+The following upstream work was explicitly preserved rather than overwritten.
+
+### August 2026 census data
+
+The original author's latest August 2026 census update remains the source of truth.
+
+### Ethnicity source update
+
+Upstream replaced the previous `race.csv` source with:
+
+```text
+ethnicity.csv
+```
+
+The Explorer category model uses the new upstream ethnicity source.
+
+### Age category/color changes
+
+The upstream `colorsAge` changes remain enabled for the Age visualization.
+
+### New 2026 categories
+
+The following upstream categories were added to the Explorer registry:
+
+```text
+Political Activism
+Housing
+Discovery
+```
+
+They use stable Explorer IDs:
+
+```text
+political-activism
+housing
+discovery
+```
+
+### Chart normalization / scale fixes
+
+The original author's latest Chart.js stacked-scale changes remain untouched by this contribution.
+
+The PR branch is based on the upstream version containing the latest 0–100% scale correction.
+
+### Data ownership
+
+This contribution does not claim authorship of the new August 2026 census data or the new polls.
+
+Those changes originate from the upstream project and are preserved so the Explorer UI works with the current project state.
+
+---
+
+## 17. Files Added by This Contribution
+
+New application components include:
 
 ```text
 src/components/ExplorerHeader/
@@ -492,18 +550,24 @@ src/types/
 └── assets.d.ts
 ```
 
----
-
-## 17. Existing Files Significantly Updated
-
-The modernization and Explorer work includes changes to files such as:
+This documentation file is also intentionally included:
 
 ```text
+CONTRIBUTION_BREAKDOWN.md
+```
+
+---
+
+## 18. Existing Files Significantly Updated
+
+The modernization and Explorer work changes files including:
+
+```text
+.gitignore
 build.js
 package.json
 package-lock.json
 tsconfig.json
-.gitignore
 
 src/components/Slider/Slider.tsx
 src/components/Slider/slider.module.scss
@@ -513,13 +577,13 @@ src/components/Slide/BarChartSlide.tsx
 src/components/Slide/slide.module.scss
 ```
 
-Additional generated files under `docs/` may change as a result of production builds, but generated output is not manually maintained as application source.
+Generated `docs/` output is intentionally excluded from the upstream pull request.
 
 ---
 
-## 18. Validation Performed
+## 19. Validation Performed
 
-The updated project has been validated with the following commands throughout the modernization work:
+The contribution has been validated with:
 
 ```bash
 npm run typecheck
@@ -527,7 +591,7 @@ npm run build
 npm run dev
 ```
 
-The TypeScript compiler and production esbuild build have both completed successfully during development.
+The TypeScript compiler and production esbuild build have completed successfully.
 
 Dependency security validation also reached:
 
@@ -535,54 +599,64 @@ Dependency security validation also reached:
 found 0 vulnerabilities
 ```
 
-Visual testing has included:
+Before the upstream PR commit, the reconciled branch also passed:
 
-- Home slide.
-- census chart slides.
-- Height slide with its category-change note.
-- top navigation.
-- custom category dropdown.
-- category rail.
-- browser resizing.
-- medium-width layouts.
+```bash
+git diff --cached --check
+npm run typecheck
+npm run build
+```
 
----
+Visual testing during development included:
 
-## 19. Design Principles Followed
-
-The modernization intentionally respects the original project's architecture and design rather than converting it into a different application stack.
-
-### Preserved project choices
-
-- SolidJS remains the UI framework.
-- SCSS remains the styling system.
-- CSS Modules remain in use.
-- esbuild remains the bundler.
-- Chart.js remains the visualization library.
-- Embla remains the carousel/navigation library.
-- existing typefaces and title artwork remain in use.
-- existing census datasets remain untouched by the UI refactor.
-
-### Avoided
-
-The update deliberately did **not** introduce:
-
-- React.
-- Next.js.
-- Vite.
-- Tailwind CSS.
-- shadcn.
-- a new router.
-- a replacement charting library.
-- unnecessary framework migration.
-
-The goal has been to modernize the existing application rather than replace the original author's implementation style.
+- Home
+- census chart slides
+- the Height slide and category-change note
+- Explorer header
+- custom category dropdown
+- horizontal category rail
+- responsive resizing
+- medium-width layouts
+- chart-title/layout behavior after the Explorer-shell refactor
 
 ---
 
-## 20. Current Explorer State
+## 20. Design Principles Followed
 
-At the end of this contribution phase, the application supports:
+The modernization intentionally respects the original project's technology and design decisions.
+
+### Preserved
+
+- SolidJS
+- SCSS
+- CSS Modules
+- esbuild
+- Chart.js
+- Embla Carousel
+- existing fonts
+- existing title artwork
+- existing census presentation
+- current upstream census data
+
+### Deliberately not introduced
+
+The contribution does **not** migrate the project to:
+
+- React
+- Next.js
+- Vite
+- Tailwind CSS
+- shadcn
+- a new router
+- a replacement charting library
+
+The purpose is to improve the existing project rather than replace its implementation style.
+
+---
+
+## 21. Current Explorer State
+
+The application currently supports:
 
 ```text
 Home
@@ -600,36 +674,29 @@ The current visualization mode remains:
 Snapshot
 ```
 
-This corresponds to the original stacked census charts.
+This corresponds to the existing stacked census charts.
 
 ---
 
-## 21. Planned / Not Yet Implemented
+## 22. Planned / Not Yet Implemented
 
-The following ideas have been discussed as possible future improvements but should **not** be treated as completed contributions:
+The following ideas are possible future work and are **not** part of this contribution.
 
 ### Trend View
 
-A time-series visualization showing how individual census responses change across census dates.
-
-Example concept:
-
-```text
-Bi/Pan
-18.79% → 27.51% → 27.10% → 25.81% → 27.51% → 29.23%
-```
+A time-series view showing how a response changes across census dates.
 
 ### Change View
 
-A visualization focused on percentage-point movement between two census dates.
+A visualization focused on percentage-point movement between two census periods.
 
 ### Compare View
 
-A future richer comparison interface between selected census periods or categories.
+A richer comparison interface between selected census periods or categories.
 
 ### Timeline Scrubber
 
-Interactive selection of census dates with detailed values and change summaries.
+Interactive selection of census dates.
 
 ### Biggest Movers
 
@@ -644,41 +711,45 @@ Stable category/view URLs such as:
 #sexuality/trend
 ```
 
-No router has been added yet.
+No router has been added as part of this contribution.
 
 ---
 
-## 22. Contribution Summary
+## 23. Contribution Summary
 
-In short, this contribution:
+This contribution:
 
-- secured and modernized the dependency tree.
-- added a practical local development workflow.
-- introduced strict TypeScript validation.
-- documented imported assets for TypeScript.
-- improved repository hygiene.
-- retained the project's original SolidJS/esbuild/SCSS architecture.
-- introduced stable category identifiers.
-- renamed Cover to Home.
-- created a persistent Census Explorer header.
-- created a custom category dropdown.
-- replaced wrapped navigation with a horizontal category rail.
-- reorganized the application into a clear Explorer shell.
-- added original-author attribution.
-- corrected legacy spacing assumptions.
-- made chart sizing responsive to the actual visualization container.
-- improved responsive header behavior.
-- preserved the original census datasets and Snapshot charts.
-- established the structure required for future Trend, Change, and Compare views.
+- modernizes and secures the dependency tree
+- adds a practical local development workflow
+- adds strict TypeScript validation
+- adds asset declarations for TypeScript
+- improves repository hygiene
+- preserves the existing SolidJS/esbuild/SCSS architecture
+- introduces stable category identifiers
+- renames Cover to Home
+- adds a persistent Census Explorer header
+- adds a custom category dropdown
+- replaces wrapped category navigation with a horizontal rail
+- reorganizes the application into an Explorer shell
+- adds original-project attribution
+- removes legacy layout assumptions
+- makes chart sizing responsive to the actual visualization container
+- improves responsive header behavior
+- preserves current upstream census data and chart behavior
+- integrates the upstream Political Activism, Housing, and Discovery categories into the Explorer model
+- preserves the latest upstream ethnicity, age-color, and Chart.js scale changes
+- establishes a foundation for future Trend, Change, Compare, and URL-state features
 
 ---
 
 ## Attribution
 
-Original HasanAbi Census project and core visualization concept:
+Original HasanAbi Census project, census data work, visual design, and core visualization concept:
 
 **[brilliantdrink](https://github.com/brilliantdrink)**
 
-Modernization, security updates, development workflow improvements, TypeScript work, and Census Explorer interface changes:
+Modernization, security updates, development workflow improvements, TypeScript work, responsive layout work, and Census Explorer interface changes:
 
 **Tyler Smith / Atlessc**
+
+This document is included to make the boundaries between original upstream work, preserved upstream updates, and this contribution explicit.

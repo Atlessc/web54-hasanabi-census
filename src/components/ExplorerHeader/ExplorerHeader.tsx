@@ -1,7 +1,14 @@
-import {createSignal, onCleanup, onMount, Show} from 'solid-js'
+import {
+  createSignal,
+  onCleanup,
+  onMount,
+  Show,
+} from 'solid-js'
+import {createMediaQuery} from '@solid-primitives/media'
 
 import type {CensusCategory} from '../Slide/slideData'
 import titleLogo from '../../images/title.svg'
+import titleStackedLogo from '../../images/title_stacked.svg'
 
 import styles from './explorerHeader.module.scss'
 
@@ -11,20 +18,32 @@ interface ExplorerHeaderProps {
   onSelect: (index: number) => void
 }
 
-export default function ExplorerHeader(props: ExplorerHeaderProps) {
-  const [categoryOpen, setCategoryOpen] = createSignal(false)
+export default function ExplorerHeader(
+  props: ExplorerHeaderProps,
+) {
+  const [categoryOpen, setCategoryOpen] =
+    createSignal(false)
 
-  let categoryDropdown: HTMLDivElement | undefined
+  const useStackedLogo = createMediaQuery(
+    '(max-width: 900px)',
+  )
+
+  let categoryDropdown:
+    | HTMLDivElement
+    | undefined
 
   const selectedCategory = () =>
-    props.categories[props.selectedIndex] ?? props.categories[0]
+    props.categories[props.selectedIndex] ??
+    props.categories[0]
 
   const selectCategory = (index: number) => {
     props.onSelect(index)
     setCategoryOpen(false)
   }
 
-  const handleTriggerKeyDown = (event: KeyboardEvent) => {
+  const handleTriggerKeyDown = (
+    event: KeyboardEvent,
+  ) => {
     if (
       event.key === 'Enter' ||
       event.key === ' ' ||
@@ -40,8 +59,12 @@ export default function ExplorerHeader(props: ExplorerHeaderProps) {
   }
 
   onMount(() => {
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!(event.target instanceof Node)) return
+    const handlePointerDown = (
+      event: PointerEvent,
+    ) => {
+      if (!(event.target instanceof Node)) {
+        return
+      }
 
       if (
         categoryDropdown &&
@@ -51,18 +74,34 @@ export default function ExplorerHeader(props: ExplorerHeaderProps) {
       }
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (
+      event: KeyboardEvent,
+    ) => {
       if (event.key === 'Escape') {
         setCategoryOpen(false)
       }
     }
 
-    window.addEventListener('pointerdown', handlePointerDown)
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener(
+      'pointerdown',
+      handlePointerDown,
+    )
+
+    window.addEventListener(
+      'keydown',
+      handleKeyDown,
+    )
 
     onCleanup(() => {
-      window.removeEventListener('pointerdown', handlePointerDown)
-      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener(
+        'pointerdown',
+        handlePointerDown,
+      )
+
+      window.removeEventListener(
+        'keydown',
+        handleKeyDown,
+      )
     })
   })
 
@@ -70,13 +109,22 @@ export default function ExplorerHeader(props: ExplorerHeaderProps) {
     <header class={styles.header}>
       <button
         class={styles.brand}
+        classList={{
+          [styles.brandStacked]:
+            useStackedLogo(),
+        }}
         type="button"
-        aria-label="Go to census cover"
+        aria-label="Go to census home"
         onclick={() => props.onSelect(0)}
       >
         <img
-          src={titleLogo}
-          alt="The HasanAbi Census"
+          src={
+            useStackedLogo()
+              ? titleStackedLogo
+              : titleLogo
+          }
+          alt=""
+          aria-hidden="true"
         />
       </button>
 
@@ -91,21 +139,30 @@ export default function ExplorerHeader(props: ExplorerHeaderProps) {
             aria-label={`Census category: ${selectedCategory()?.name}`}
             aria-haspopup="menu"
             aria-expanded={categoryOpen()}
-            onclick={() => setCategoryOpen(!categoryOpen())}
+            onclick={() =>
+              setCategoryOpen(
+                !categoryOpen(),
+              )
+            }
             onkeydown={handleTriggerKeyDown}
           >
-            <span class={styles.categoryLabel}>
+            <span
+              class={styles.categoryLabel}
+            >
               Category
             </span>
 
-            <span class={styles.categoryValue}>
+            <span
+              class={styles.categoryValue}
+            >
               {selectedCategory()?.name}
             </span>
 
             <span
               class={styles.categoryCaret}
               classList={{
-                [styles.categoryCaretOpen]: categoryOpen(),
+                [styles.categoryCaretOpen]:
+                  categoryOpen(),
               }}
               aria-hidden="true"
             />
@@ -117,28 +174,47 @@ export default function ExplorerHeader(props: ExplorerHeaderProps) {
               role="menu"
               aria-label="Census categories"
             >
-              {props.categories.map((category, index) => (
-                <button
-                  class={styles.categoryOption}
-                  classList={{
-                    [styles.categoryOptionSelected]:
-                      props.selectedIndex === index,
-                  }}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={props.selectedIndex === index}
-                  onclick={() => selectCategory(index)}
-                >
-                  <span>{category.name}</span>
+              {props.categories.map(
+                (category, index) => (
+                  <button
+                    class={
+                      styles.categoryOption
+                    }
+                    classList={{
+                      [styles.categoryOptionSelected]:
+                        props.selectedIndex ===
+                        index,
+                    }}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={
+                      props.selectedIndex ===
+                      index
+                    }
+                    onclick={() =>
+                      selectCategory(index)
+                    }
+                  >
+                    <span>
+                      {category.name}
+                    </span>
 
-                  <Show when={props.selectedIndex === index}>
-                    <span
-                      class={styles.selectedMark}
-                      aria-hidden="true"
-                    />
-                  </Show>
-                </button>
-              ))}
+                    <Show
+                      when={
+                        props.selectedIndex ===
+                        index
+                      }
+                    >
+                      <span
+                        class={
+                          styles.selectedMark
+                        }
+                        aria-hidden="true"
+                      />
+                    </Show>
+                  </button>
+                ),
+              )}
             </div>
           </Show>
         </div>
