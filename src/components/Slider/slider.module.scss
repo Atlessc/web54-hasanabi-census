@@ -1,181 +1,122 @@
+.explorer {
+  height: 100dvh;
+  width: 100%;
+
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  overflow: hidden;
+
+  background: #111;
+}
+
+.visualization {
+  position: relative;
+
+  min-height: 0;
+
+  overflow: hidden;
+}
+
 .slider {
   height: 100%;
   width: 100%;
+
   overflow: hidden;
+}
 
-  .container {
-    height: 100%;
-    width: 100%;
+.container {
+  height: 100%;
+  width: 100%;
 
-    display: flex;
+  display: flex;
+}
+
+.slide {
+  flex: 0 0 100%;
+
+  min-width: 0;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow {
+  $size: 4rem;
+
+  position: absolute;
+
+  top: calc(50% - #{$size} / 2);
+
+  z-index: 4;
+
+  height: $size;
+  width: $size;
+
+  appearance: none;
+
+  border: none;
+
+  background-color: transparent;
+
+  filter: drop-shadow(
+    0 2px 2px #111
+  );
+
+  font-size: 2rem;
+
+  color: currentColor;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
   }
 
-  .slide {
-    flex: 0 0 100%;
-    min-width: 0;
+  &.hide,
+  &:disabled {
+    opacity: 0;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    pointer-events: none;
   }
 
-  .arrow {
-    $size: 4rem;
-    position: absolute;
-    top: calc(50% - #{$size} / 2);
+  &.next {
+    right: 2rem;
+  }
 
-    height: $size;
-    width: $size;
+  &.prev {
+    left: 2rem;
+  }
 
-    appearance: none;
-    border: none;
-    background-color: transparent;
-    filter: drop-shadow(0 2px 2px #111);
-    font-size: 2rem;
-    color: currentColor;
-
-    border-radius: 50%;
-    //background-repeat: no-repeat;
-    //background-image: url('../../images/arrow.svg');
-    //background-size: $size * .9;
-    //background-position: center;
-
-    //font-size: 0;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    $hover-scale: scale(1.1);
-    $margin: 2rem;
-    $margin-md: 0rem;
-
-    transition: transform .2s ease;
-    cursor: pointer;
-
-    &.hide {
-      // hide but keep capturing pointer events area to prevent weird behaviour while spamming the button
-      opacity: 0;
-      cursor: default;
-    }
-
-    &:hover {
-      transform: $hover-scale;
-    }
-
+  @media screen and (max-width: 1200px) {
     &.next {
-      right: $margin;
+      right: 0;
     }
 
     &.prev {
-      left: $margin;
-    }
-
-    @media screen and (max-width: 1200px) {
-      &.next {
-        right: $margin-md;
-      }
-
-      &.prev {
-        left: $margin-md;
-      }
-    }
-  }
-
-  @media screen and (max-width: 700px) {
-    .arrow {
-      display: none;
+      left: 0;
     }
   }
 }
 
-.nav {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-
-  padding: 1rem 10%;
-  box-sizing: border-box;
-  background-color: inherit;
-  font-family: 'Archivo', sans-serif;
-
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-
-  &.sliding {
-    height: 12rem;
-    padding: .5rem 10%;
-
-    background: transparentize(#111, .5);
-    backdrop-filter: blur(10px);
-
-    overflow: hidden;
-    display: block;
-
-    transition: .3s ease;
-    transition-property: transform, background, backdrop-filter;
-
-    &.collapsed {
-      transform: translateY(#{(12rem * 0.5) - (3rem * 0.5)});
-      background: transparentize(#111, 1);
-      backdrop-filter: blur(0px);
-
-      .item:not(.selected) {
-        opacity: 0 !important;
-        pointer-events: none;
-      }
-
-      .item.selected {
-        opacity: 1;
-
-        &:after {
-          content: none;
-        }
-      }
-    }
-
-    .container {
-      height: 100%;
-
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      flex-wrap: nowrap;
-      gap: 0;
-    }
-
-    .item {
-      padding: .5rem;
-      height: 3rem;
-      box-sizing: border-box;
-      text-align: center;
-      --scale: 1;
-      transform: rotate(0.001deg) scale(1);
-      will-change: transform;
-      transition: opacity .1s ease;
-    }
-  }
-
-  .item {
-    position: relative;
-    cursor: pointer;
-
-    &.selected:after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: transparentize(#ff1f50, .5);
-    }
-
-    .selectIcon {
-      margin-left: .2rem;
-      font-size: .8em;
-    }
+@media screen and (max-width: 700px) {
+  .arrow {
+    display: none;
   }
 }

@@ -1,0 +1,40 @@
+.footer {
+  min-height: 2rem;
+  padding: .4rem 1rem .5rem;
+  box-sizing: border-box;
+
+  border-top: 1px solid rgba(255, 255, 255, .045);
+
+  background: #0d0d0d;
+  color: #666;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+
+  font-family: 'Archivo', sans-serif;
+  font-size: .58rem;
+  letter-spacing: .025em;
+
+  a {
+    color: #999;
+    text-decoration: none;
+
+    transition: color .15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #ff1f50;
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .footer {
+    min-height: 1.8rem;
+    padding: .3rem .75rem .4rem;
+
+    font-size: .54rem;
+  }
+}
