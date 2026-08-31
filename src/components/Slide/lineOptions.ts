@@ -2,111 +2,134 @@ import type {
   Chart,
   ChartOptions,
   Plugin,
-} from 'chart.js'
+} from "chart.js";
 
 import type {
   CensusLinePoint,
-} from './getLineChartData'
+} from "./getLineChartData";
 
 import {
   CensusTimelinePoint,
   formatCensusTick,
-} from './censusTimeline'
+} from "./censusTimeline";
 
 const font = {
-  family:
-    'Fraunces',
-
-  size:
-    15,
-}
+  family: "Fraunces",
+  size: 15,
+};
 
 const tinyFont = {
-  family:
-    'Fraunces',
-
-  size:
-    11,
-}
+  family: "Fraunces",
+  size: 11,
+};
 
 const compactNumber =
   new Intl.NumberFormat(
-    'en-US',
+    "en-US",
     {
-      notation:
-        'compact',
-
-      maximumFractionDigits:
-        1,
+      notation: "compact",
+      maximumFractionDigits: 1,
     },
-  )
+  );
 
 const fullNumber =
   new Intl.NumberFormat(
-    'en-US',
-  )
+    "en-US",
+  );
 
 /*
- * Legend-focus state belongs
- * to each individual Chart.js
- * instance.
+ * --------------------------------------------------
+ * LINE-RELATIVE FADE
+ * --------------------------------------------------
+ *
+ * Every dataset gets its own fade.
+ *
+ * SHADE_DEPTH:
+ *   How many CSS pixels below EACH
+ *   individual line the fade extends.
+ *
+ * SHADE_TOP_OPACITY:
+ *   Opacity directly underneath
+ *   that individual line.
+ *
+ * The fade is mathematically linear:
+ *
+ * 0px below line        = 18%
+ * 30px below line       = 13.5%
+ * 60px below line       = 9%
+ * 90px below line       = 4.5%
+ * 120px below line      = 0%
  */
+
+const SHADE_DEPTH =
+  120;
+
+const SHADE_TOP_OPACITY =
+  0.18;
+
+/*
+ * --------------------------------------------------
+ * LEGEND FOCUS
+ * --------------------------------------------------
+ */
+
 const focusedDataset =
   new WeakMap<
-    Chart<'line'>,
+    Chart<"line">,
     number | null
-  >()
+  >();
 
 const originalColors =
   new WeakMap<
-    Chart<'line'>,
+    Chart<"line">,
     string[]
-  >()
+  >();
 
 const mutedColor =
-  'rgba(130, 130, 130, .32)'
+  "rgba(130, 130, 130, .32)";
 
 /*
- * The reveal animation is deliberately
- * independent from Chart.js animations.
+ * --------------------------------------------------
+ * REVEAL ANIMATION
+ * --------------------------------------------------
  *
- * Chart.js may redraw/update because of
- * tooltips, pointer interaction, legend
- * interaction, resizing, etc.
+ * This animation remains completely
+ * separate from Chart.js animation.
  *
- * None of those should replay the
- * entrance animation.
+ * Therefore:
+ *
+ * - touching the graph
+ * - displaying a tooltip
+ * - clicking the legend
+ * - resizing
+ *
+ * cannot replay the entrance.
  */
+
 interface RevealableChart
-  extends Chart<'line'> {
-  $lineRevealProgress?:
-    number
+  extends Chart<"line"> {
+  $lineRevealProgress?: number;
 
-  $lineRevealStarted?:
-    boolean
+  $lineRevealStarted?: boolean;
 
-  $lineRevealComplete?:
-    boolean
+  $lineRevealComplete?: boolean;
 
-  $lineRevealClip?:
-    boolean
+  $lineRevealClip?: boolean;
 
-  $lineRevealFrame?:
-    number
+  $lineRevealFrame?: number;
 }
 
 const REVEAL_DURATION =
-  1050
+  1050;
 
 const easeOutQuart = (
-  progress:
-    number,
+  progress: number,
 ) =>
   1 -
   Math.pow(
     1 - progress,
     4,
-  )
+  );
 
 const startReveal = (
   chart:
@@ -115,61 +138,51 @@ const startReveal = (
   if (
     chart.$lineRevealStarted
   ) {
-    return
+    return;
   }
 
   chart.$lineRevealStarted =
-    true
+    true;
 
   chart.$lineRevealComplete =
-    false
+    false;
 
   chart.$lineRevealProgress =
-    0
+    0;
 
   const startTime =
-    performance.now()
+    performance.now();
 
   const frame = (
     currentTime:
       number,
   ) => {
-    /*
-     * Chart may have been destroyed
-     * while the animation was running.
-     */
     if (
       chart.$lineRevealComplete
     ) {
-      return
+      return;
     }
 
     const elapsed =
       currentTime -
-      startTime
+      startTime;
 
     const rawProgress =
       Math.min(
         1,
         elapsed /
           REVEAL_DURATION,
-      )
+      );
 
     chart.$lineRevealProgress =
       easeOutQuart(
         rawProgress,
-      )
+      );
 
     /*
-     * draw(), rather than update(),
-     * is important here.
-     *
-     * update() would re-run Chart.js
-     * state machinery. We only need
-     * another paint of the exact same
-     * graph.
+     * Repaint only.
      */
-    chart.draw()
+    chart.draw();
 
     if (
       rawProgress <
@@ -178,71 +191,57 @@ const startReveal = (
       chart.$lineRevealFrame =
         requestAnimationFrame(
           frame,
-        )
+        );
 
-      return
+      return;
     }
 
     chart.$lineRevealProgress =
-      1
+      1;
 
     chart.$lineRevealComplete =
-      true
+      true;
 
     chart.$lineRevealFrame =
-      undefined
+      undefined;
 
-    chart.draw()
-  }
+    chart.draw();
+  };
 
   chart.$lineRevealFrame =
     requestAnimationFrame(
       frame,
-    )
-}
+    );
+};
 
 const lineRevealPlugin:
-  Plugin<'line'> = {
+  Plugin<"line"> = {
   id:
-    'lineRevealPlugin',
+    "lineRevealPlugin",
 
-  beforeInit(
-    chart,
-  ) {
+  beforeInit(chart) {
     const revealChart =
       chart as
-        RevealableChart
+        RevealableChart;
 
     revealChart
       .$lineRevealProgress =
-      0
+      0;
 
     revealChart
       .$lineRevealStarted =
-      false
+      false;
 
     revealChart
       .$lineRevealComplete =
-      false
+      false;
   },
 
-  /*
-   * afterRender happens once the
-   * initial axes/legend/chart layout
-   * are ready.
-   *
-   * The started flag guarantees that
-   * later renders caused by tapping,
-   * tooltips, resizing, or legend
-   * interactions do not restart it.
-   */
-  afterRender(
-    chart,
-  ) {
+  afterRender(chart) {
     startReveal(
       chart as
         RevealableChart,
-    )
+    );
   },
 
   beforeDatasetsDraw(
@@ -250,34 +249,34 @@ const lineRevealPlugin:
   ) {
     const revealChart =
       chart as
-        RevealableChart
+        RevealableChart;
 
     const {
       chartArea,
       ctx,
-    } = chart
+    } = chart;
 
     if (
       !chartArea
     ) {
-      return
+      return;
     }
 
     const progress =
       revealChart
         .$lineRevealProgress ??
-      0
+      0;
 
     const width =
       (
         chartArea.right -
         chartArea.left
       ) *
-      progress
+      progress;
 
-    ctx.save()
+    ctx.save();
 
-    ctx.beginPath()
+    ctx.beginPath();
 
     ctx.rect(
       chartArea.left,
@@ -285,13 +284,13 @@ const lineRevealPlugin:
       width,
       chartArea.bottom -
         chartArea.top,
-    )
+    );
 
-    ctx.clip()
+    ctx.clip();
 
     revealChart
       .$lineRevealClip =
-      true
+      true;
   },
 
   afterDatasetsDraw(
@@ -299,20 +298,20 @@ const lineRevealPlugin:
   ) {
     const revealChart =
       chart as
-        RevealableChart
+        RevealableChart;
 
     if (
       !revealChart
         .$lineRevealClip
     ) {
-      return
+      return;
     }
 
-    chart.ctx.restore()
+    chart.ctx.restore();
 
     revealChart
       .$lineRevealClip =
-      false
+      false;
   },
 
   beforeDestroy(
@@ -320,15 +319,11 @@ const lineRevealPlugin:
   ) {
     const revealChart =
       chart as
-        RevealableChart
+        RevealableChart;
 
-    /*
-     * Mark complete first so a frame
-     * already queued cannot continue.
-     */
     revealChart
       .$lineRevealComplete =
-      true
+      true;
 
     if (
       revealChart
@@ -338,18 +333,853 @@ const lineRevealPlugin:
       cancelAnimationFrame(
         revealChart
           .$lineRevealFrame,
-      )
+      );
 
       revealChart
         .$lineRevealFrame =
-        undefined
+        undefined;
     }
   },
+};
+
+/*
+ * --------------------------------------------------
+ * CURVE INTERPOLATION
+ * --------------------------------------------------
+ *
+ * Chart.js already calculated the
+ * actual rendered Bezier curve.
+ *
+ * We ask that curve:
+ *
+ * "At this exact X coordinate,
+ * what is your Y coordinate?"
+ *
+ * That lets the fade follow the
+ * rendered curve itself instead of
+ * approximating it between nodes.
+ */
+
+interface CurvePoint {
+  x: number;
+  y: number;
 }
+
+interface InterpolatableLine {
+  interpolate(
+    point:
+      CurvePoint,
+
+    property:
+      "x" | "y",
+  ):
+    | CurvePoint
+    | CurvePoint[]
+    | undefined;
+}
+
+const getCurvePoint = (
+  line:
+    InterpolatableLine,
+
+  x:
+    number,
+):
+  CurvePoint |
+  undefined => {
+  const result =
+    line.interpolate(
+      {
+        x,
+        y: 0,
+      },
+      "x",
+    );
+
+  if (
+    !result
+  ) {
+    return undefined;
+  }
+
+  if (
+    Array.isArray(
+      result,
+    )
+  ) {
+    return result[0];
+  }
+
+  return result;
+};
+
+/*
+ * --------------------------------------------------
+ * COLOR PARSING
+ * --------------------------------------------------
+ */
+
+interface ParsedColor {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+
+const parseColor = (
+  color:
+    string,
+): ParsedColor => {
+  const normalized =
+    color.trim();
+
+  if (
+    normalized.startsWith(
+      "#",
+    )
+  ) {
+    let hex =
+      normalized.slice(
+        1,
+      );
+
+    if (
+      hex.length ===
+      3
+    ) {
+      hex =
+        hex
+          .split("")
+          .map(
+            character =>
+              character +
+              character,
+          )
+          .join("");
+    }
+
+    if (
+      hex.length ===
+      6
+    ) {
+      return {
+        r:
+          Number.parseInt(
+            hex.slice(
+              0,
+              2,
+            ),
+            16,
+          ),
+
+        g:
+          Number.parseInt(
+            hex.slice(
+              2,
+              4,
+            ),
+            16,
+          ),
+
+        b:
+          Number.parseInt(
+            hex.slice(
+              4,
+              6,
+            ),
+            16,
+          ),
+
+        a:
+          1,
+      };
+    }
+  }
+
+  const rgbMatch =
+    normalized.match(
+      /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/i,
+    );
+
+  if (
+    rgbMatch
+  ) {
+    return {
+      r:
+        Number(
+          rgbMatch[1],
+        ),
+
+      g:
+        Number(
+          rgbMatch[2],
+        ),
+
+      b:
+        Number(
+          rgbMatch[3],
+        ),
+
+      a:
+        rgbMatch[4] ===
+          undefined
+          ? 1
+          : Number(
+              rgbMatch[4],
+            ),
+    };
+  }
+
+  /*
+   * Safe fallback.
+   */
+  return {
+    r: 255,
+    g: 255,
+    b: 255,
+    a: 1,
+  };
+};
+
+/*
+ * --------------------------------------------------
+ * ALPHA COMPOSITING
+ * --------------------------------------------------
+ *
+ * Multiple line-relative fades may
+ * genuinely occupy the same pixel.
+ *
+ * Instead of one replacing another,
+ * composite them normally.
+ */
+
+const compositePixel = (
+  pixels:
+    Uint8ClampedArray,
+
+  index:
+    number,
+
+  sourceColor:
+    ParsedColor,
+
+  sourceAlpha:
+    number,
+) => {
+  if (
+    sourceAlpha <=
+    0
+  ) {
+    return;
+  }
+
+  const destinationAlpha =
+    pixels[
+      index + 3
+    ] /
+    255;
+
+  const sourceA =
+    Math.min(
+      1,
+      Math.max(
+        0,
+        sourceAlpha,
+      ),
+    );
+
+  const outputAlpha =
+    sourceA +
+    destinationAlpha *
+      (
+        1 -
+        sourceA
+      );
+
+  if (
+    outputAlpha <=
+    0
+  ) {
+    return;
+  }
+
+  const destinationR =
+    pixels[index];
+
+  const destinationG =
+    pixels[
+      index + 1
+    ];
+
+  const destinationB =
+    pixels[
+      index + 2
+    ];
+
+  const sourceContribution =
+    sourceA /
+    outputAlpha;
+
+  const destinationContribution =
+    (
+      destinationAlpha *
+      (
+        1 -
+        sourceA
+      )
+    ) /
+    outputAlpha;
+
+  pixels[index] =
+    Math.round(
+      sourceColor.r *
+        sourceContribution +
+      destinationR *
+        destinationContribution,
+    );
+
+  pixels[
+    index + 1
+  ] =
+    Math.round(
+      sourceColor.g *
+        sourceContribution +
+      destinationG *
+        destinationContribution,
+    );
+
+  pixels[
+    index + 2
+  ] =
+    Math.round(
+      sourceColor.b *
+        sourceContribution +
+      destinationB *
+        destinationContribution,
+    );
+
+  pixels[
+    index + 3
+  ] =
+    Math.round(
+      outputAlpha *
+        255,
+    );
+};
+
+/*
+ * --------------------------------------------------
+ * SHADE CACHE
+ * --------------------------------------------------
+ *
+ * All line fades are rendered into
+ * ONE transparent offscreen canvas.
+ *
+ * We build it once.
+ *
+ * The reveal animation then only
+ * repaints the cached canvas.
+ */
+
+interface ShadeCacheEntry {
+  key: string;
+
+  canvas:
+    HTMLCanvasElement;
+}
+
+const shadeCache =
+  new WeakMap<
+    Chart<"line">,
+    ShadeCacheEntry
+  >();
+
+/*
+ * --------------------------------------------------
+ * BUILD THE TRUE LINE-RELATIVE FADE
+ * --------------------------------------------------
+ */
+
+const buildShadeCanvas = (
+  chart:
+    Chart<"line">,
+):
+  HTMLCanvasElement => {
+  const {
+    chartArea,
+  } = chart;
+
+  const dpr =
+    chart
+      .currentDevicePixelRatio ||
+    1;
+
+  /*
+   * Only allocate pixels for the
+   * graph plotting area.
+   *
+   * We do not need a canvas the
+   * size of the whole component.
+   */
+  const logicalWidth =
+    Math.max(
+      1,
+      chartArea.right -
+        chartArea.left,
+    );
+
+  const logicalHeight =
+    Math.max(
+      1,
+      chartArea.bottom -
+        chartArea.top,
+    );
+
+  const physicalWidth =
+    Math.max(
+      1,
+      Math.ceil(
+        logicalWidth *
+          dpr,
+      ),
+    );
+
+  const physicalHeight =
+    Math.max(
+      1,
+      Math.ceil(
+        logicalHeight *
+          dpr,
+      ),
+    );
+
+  const canvas =
+    document.createElement(
+      "canvas",
+    );
+
+  canvas.width =
+    physicalWidth;
+
+  canvas.height =
+    physicalHeight;
+
+  const context =
+    canvas.getContext(
+      "2d",
+    );
+
+  if (
+    !context
+  ) {
+    return canvas;
+  }
+
+  const imageData =
+    context.createImageData(
+      physicalWidth,
+      physicalHeight,
+    );
+
+  const pixels =
+    imageData.data;
+
+  chart.data.datasets
+    .forEach(
+      (
+        dataset,
+        datasetIndex,
+      ) => {
+        const meta =
+          chart.getDatasetMeta(
+            datasetIndex,
+          );
+
+        if (
+          meta.hidden ||
+          !meta.dataset
+        ) {
+          return;
+        }
+
+        const colorString =
+          typeof (
+            dataset
+              .borderColor
+          ) === "string"
+            ? dataset
+                .borderColor
+            : "#fff";
+
+        const color =
+          parseColor(
+            colorString,
+          );
+
+        const line =
+          meta.dataset as
+            unknown as
+            InterpolatableLine;
+
+        /*
+         * Work at the actual physical
+         * canvas pixel resolution.
+         *
+         * This is important.
+         *
+         * We do NOT repeat one logical
+         * X sample across multiple
+         * device pixels.
+         *
+         * That was the cause of the
+         * previous vertical striping.
+         */
+        for (
+          let physicalX =
+            0;
+
+          physicalX <
+            physicalWidth;
+
+          physicalX +=
+            1
+        ) {
+          const logicalX =
+            chartArea.left +
+            (
+              physicalX +
+              0.5
+            ) /
+              dpr;
+
+          const curvePoint =
+            getCurvePoint(
+              line,
+              logicalX,
+            );
+
+          if (
+            !curvePoint ||
+            !Number.isFinite(
+              curvePoint.y,
+            )
+          ) {
+            continue;
+          }
+
+          if (
+            curvePoint.y <
+              chartArea.top ||
+            curvePoint.y >
+              chartArea.bottom
+          ) {
+            continue;
+          }
+
+          /*
+           * Convert the rendered curve
+           * Y coordinate into this
+           * offscreen canvas's local
+           * physical pixel space.
+           */
+          const curvePhysicalY =
+            (
+              curvePoint.y -
+              chartArea.top
+            ) *
+            dpr;
+
+          const depthPhysical =
+            SHADE_DEPTH *
+            dpr;
+
+          const startPhysicalY =
+            Math.max(
+              0,
+              Math.floor(
+                curvePhysicalY,
+              ),
+            );
+
+          const endPhysicalY =
+            Math.min(
+              physicalHeight -
+                1,
+
+              Math.ceil(
+                curvePhysicalY +
+                  depthPhysical,
+              ),
+            );
+
+          for (
+            let physicalY =
+              startPhysicalY;
+
+            physicalY <=
+              endPhysicalY;
+
+            physicalY +=
+              1
+          ) {
+            const distancePhysical =
+              (
+                physicalY +
+                0.5
+              ) -
+              curvePhysicalY;
+
+            /*
+             * Slightly above the curve
+             * due to pixel rounding.
+             */
+            if (
+              distancePhysical <
+              0
+            ) {
+              continue;
+            }
+
+            const distanceLogical =
+              distancePhysical /
+              dpr;
+
+            if (
+              distanceLogical >
+              SHADE_DEPTH
+            ) {
+              continue;
+            }
+
+            /*
+             * EXACTLY LINEAR.
+             *
+             * At the line:
+             * fade = 1
+             *
+             * Halfway down:
+             * fade = .5
+             *
+             * At SHADE_DEPTH:
+             * fade = 0
+             */
+            const fade =
+              1 -
+              distanceLogical /
+                SHADE_DEPTH;
+
+            const sourceAlpha =
+              color.a *
+              SHADE_TOP_OPACITY *
+              Math.max(
+                0,
+                fade,
+              );
+
+            const pixelIndex =
+              (
+                physicalY *
+                  physicalWidth +
+                physicalX
+              ) *
+              4;
+
+            compositePixel(
+              pixels,
+              pixelIndex,
+              color,
+              sourceAlpha,
+            );
+          }
+        }
+      },
+    );
+
+  /*
+   * One pixel-buffer write.
+   *
+   * No strokes.
+   * No copied curves.
+   * No gradient rectangles.
+   * No blur.
+   */
+  context.putImageData(
+    imageData,
+    0,
+    0,
+  );
+
+  return canvas;
+};
+
+const getShadeCanvas = (
+  chart:
+    Chart<"line">,
+):
+  HTMLCanvasElement => {
+  const {
+    chartArea,
+  } = chart;
+
+  const colorSignature =
+    chart.data.datasets
+      .map(
+        dataset =>
+          typeof (
+            dataset
+              .borderColor
+          ) === "string"
+            ? dataset
+                .borderColor
+            : "#fff",
+      )
+      .join(",");
+
+  const key =
+    [
+      chart.width,
+      chart.height,
+
+      chart
+        .currentDevicePixelRatio,
+
+      chartArea.left,
+      chartArea.top,
+      chartArea.right,
+      chartArea.bottom,
+
+      colorSignature,
+
+      SHADE_DEPTH,
+      SHADE_TOP_OPACITY,
+    ].join(
+      "|",
+    );
+
+  const existing =
+    shadeCache.get(
+      chart,
+    );
+
+  if (
+    existing &&
+    existing.key ===
+      key
+  ) {
+    return existing
+      .canvas;
+  }
+
+  const canvas =
+    buildShadeCanvas(
+      chart,
+    );
+
+  shadeCache.set(
+    chart,
+    {
+      key,
+      canvas,
+    },
+  );
+
+  return canvas;
+};
+
+/*
+ * --------------------------------------------------
+ * LINE SHADE PLUGIN
+ * --------------------------------------------------
+ */
+
+const lineShadePlugin:
+  Plugin<"line"> = {
+  id:
+    "lineShadePlugin",
+
+  beforeDatasetsDraw(
+    chart,
+  ) {
+    const {
+      ctx,
+      chartArea,
+    } = chart;
+
+    if (
+      !chartArea
+    ) {
+      return;
+    }
+
+    const canvas =
+      getShadeCanvas(
+        chart,
+      );
+
+    ctx.save();
+
+    /*
+     * Chart area clipping.
+     */
+    ctx.beginPath();
+
+    ctx.rect(
+      chartArea.left,
+      chartArea.top,
+      chartArea.right -
+        chartArea.left,
+      chartArea.bottom -
+        chartArea.top,
+    );
+
+    ctx.clip();
+
+    /*
+     * Offscreen shade canvas is
+     * device-pixel-resolution.
+     *
+     * Scale it into the exact
+     * logical Chart.js plot area.
+     */
+    ctx.drawImage(
+      canvas,
+
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+
+      chartArea.left,
+      chartArea.top,
+
+      chartArea.right -
+        chartArea.left,
+
+      chartArea.bottom -
+        chartArea.top,
+    );
+
+    ctx.restore();
+  },
+
+  beforeDestroy(
+    chart,
+  ) {
+    shadeCache.delete(
+      chart,
+    );
+  },
+};
+
+/*
+ * --------------------------------------------------
+ * LEGEND INTERACTION
+ * --------------------------------------------------
+ */
 
 const focusLine = (
   chart:
-    Chart<'line'>,
+    Chart<"line">,
 
   datasetIndex:
     number,
@@ -357,48 +1187,48 @@ const focusLine = (
   let colors =
     originalColors.get(
       chart,
-    )
+    );
 
-  if (!colors) {
+  if (
+    !colors
+  ) {
     colors =
-      chart.data
-        .datasets
+      chart.data.datasets
         .map(
           dataset =>
             typeof (
               dataset
                 .borderColor
-            ) === 'string'
+            ) === "string"
               ? dataset
                   .borderColor
-              : '#fff',
-        )
+              : "#fff",
+        );
 
     originalColors.set(
       chart,
       colors,
-    )
+    );
   }
 
   const current =
     focusedDataset.get(
       chart,
     ) ??
-    null
+    null;
 
   const next =
     current ===
       datasetIndex
       ? null
-      : datasetIndex
+      : datasetIndex;
 
   focusedDataset.set(
     chart,
     next,
-  )
+  );
 
-  chart.data
-    .datasets
+  chart.data.datasets
     .forEach(
       (
         dataset,
@@ -406,81 +1236,96 @@ const focusLine = (
       ) => {
         const selected =
           next === null ||
-          index === next
+          index === next;
 
         const color =
           selected
             ? colors![index]
-            : mutedColor
+            : mutedColor;
 
-        /*
-         * backgroundColor intentionally
-         * stays untouched.
-         *
-         * Its gradient callback reads
-         * borderColor, so changing the
-         * line color automatically also
-         * changes its area shading.
-         */
         dataset.borderColor =
-          color
+          color;
+
+        dataset.backgroundColor =
+          color;
 
         dataset.pointBackgroundColor =
-          color
+          color;
 
         dataset.pointBorderColor =
           selected
-            ? '#111'
-            : mutedColor
+            ? "#111"
+            : mutedColor;
 
         if (
           next === null
         ) {
           dataset.borderWidth =
-            3
+            3;
 
           dataset.pointRadius =
-            4
+            4;
 
           dataset.pointHoverRadius =
-            6
+            6;
         } else if (
           index === next
         ) {
           dataset.borderWidth =
-            4
+            4;
 
           dataset.pointRadius =
-            5
+            5;
 
           dataset.pointHoverRadius =
-            7
+            7;
         } else {
           dataset.borderWidth =
-            2
+            2;
 
           dataset.pointRadius =
-            3
+            3;
 
           dataset.pointHoverRadius =
-            5
+            5;
         }
       },
-    )
+    );
 
   /*
-   * No Chart.js animation and,
-   * importantly, no entrance reveal.
+   * colorSignature in the shade
+   * cache key changes automatically,
+   * so the fade is regenerated with
+   * the focused/grey colors.
    */
   chart.update(
-    'none',
-  )
-}
+    "none",
+  );
+};
+
+/*
+ * ORDER MATTERS.
+ *
+ * 1. Reveal establishes the
+ *    left-to-right clip.
+ *
+ * 2. Shade paints inside it.
+ *
+ * 3. Chart.js paints the crisp
+ *    lines and nodes afterward.
+ */
 
 export const linePlugins:
-  Plugin<'line'>[] = [
+  Plugin<"line">[] = [
     lineRevealPlugin,
-  ]
+    lineShadePlugin,
+  ];
+
+/*
+ * --------------------------------------------------
+ * CHART OPTIONS
+ * --------------------------------------------------
+ */
 
 export const lineChartOptions = (
   tiny:
@@ -488,23 +1333,23 @@ export const lineChartOptions = (
 
   timeline:
     CensusTimelinePoint[],
-): ChartOptions<'line'> => {
+): ChartOptions<"line"> => {
   const activeFont =
     tiny
       ? tinyFont
-      : font
+      : font;
 
   const firstTimestamp =
     timeline[0]
       ?.timestamp ??
-    0
+    0;
 
   const lastTimestamp =
     timeline[
       timeline.length -
       1
     ]?.timestamp ??
-    firstTimestamp
+    firstTimestamp;
 
   return {
     responsive:
@@ -517,27 +1362,21 @@ export const lineChartOptions = (
       true,
 
     /*
-     * Do not use Chart.js's general
-     * animation engine for the line
-     * entrance.
-     *
-     * Touch/tooltip/interaction updates
-     * can run through that engine too.
-     * Our custom plugin owns entrance
-     * animation instead.
+     * Our reveal plugin handles
+     * the only entrance animation.
      */
     animation:
       false,
 
     interaction: {
       mode:
-        'nearest',
+        "nearest",
 
       intersect:
         false,
 
       axis:
-        'xy',
+        "xy",
     },
 
     plugins: {
@@ -574,21 +1413,21 @@ export const lineChartOptions = (
         ) {
           const index =
             legendItem
-              .datasetIndex
+              .datasetIndex;
 
           if (
             index ===
             undefined
           ) {
-            return
+            return;
           }
 
           focusLine(
             legend.chart as
-              Chart<'line'>,
+              Chart<"line">,
 
             index,
-          )
+          );
         },
       },
 
@@ -607,19 +1446,21 @@ export const lineChartOptions = (
             items,
           ) {
             const first =
-              items[0]
+              items[0];
 
-            if (!first) {
-              return ''
+            if (
+              !first
+            ) {
+              return "";
             }
 
             const point =
               first.raw as
-                CensusLinePoint
+                CensusLinePoint;
 
             return (
               point.dateLabel
-            )
+            );
           },
 
           label(
@@ -627,13 +1468,13 @@ export const lineChartOptions = (
           ) {
             const point =
               context.raw as
-                CensusLinePoint
+                CensusLinePoint;
 
             const label =
               context
                 .dataset
                 .label ??
-              'Data'
+              "Data";
 
             return (
               `${label}: ` +
@@ -641,7 +1482,7 @@ export const lineChartOptions = (
                 .format(
                   point.y,
                 )
-            )
+            );
           },
 
           afterLabel(
@@ -649,17 +1490,17 @@ export const lineChartOptions = (
           ) {
             const point =
               context.raw as
-                CensusLinePoint
+                CensusLinePoint;
 
             if (
               point.observed
             ) {
-              return ''
+              return "";
             }
 
             return (
-              'Not measured in this census'
-            )
+              "Not measured in this census"
+            );
           },
         },
       },
@@ -668,14 +1509,14 @@ export const lineChartOptions = (
     elements: {
       line: {
         tension:
-          .35,
+          0.35,
       },
     },
 
     scales: {
       x: {
         type:
-          'linear',
+          "linear",
 
         min:
           firstTimestamp,
@@ -684,11 +1525,16 @@ export const lineChartOptions = (
           lastTimestamp,
 
         bounds:
-          'ticks',
+          "ticks",
 
         offset:
           false,
 
+        /*
+         * Only census dates get ticks,
+         * but their X positions still
+         * reflect actual elapsed time.
+         */
         afterBuildTicks(
           scale,
         ) {
@@ -698,7 +1544,7 @@ export const lineChartOptions = (
                 value:
                   point.timestamp,
               }),
-            )
+            );
         },
 
         ticks: {
@@ -732,25 +1578,25 @@ export const lineChartOptions = (
               timeline,
 
               tiny,
-            )
+            );
           },
         },
 
         grid: {
           color:
-            'rgba(255, 255, 255, .06)',
+            "rgba(255, 255, 255, .06)",
         },
       },
 
       y: {
         type:
-          'linear',
+          "linear",
 
         beginAtZero:
           true,
 
         grace:
-          '8%',
+          "8%",
 
         ticks: {
           precision:
@@ -767,15 +1613,15 @@ export const lineChartOptions = (
                 Number(
                   value,
                 ),
-              )
+              );
           },
         },
 
         grid: {
           color:
-            'rgba(255, 255, 255, .07)',
+            "rgba(255, 255, 255, .07)",
         },
       },
     },
-  }
-}
+  };
+};

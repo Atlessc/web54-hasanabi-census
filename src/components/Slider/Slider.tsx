@@ -3,56 +3,56 @@ import {
   onCleanup,
   onMount,
   Show,
-} from 'solid-js'
+} from "solid-js";
 
 import createEmblaCarousel
-  from 'embla-carousel-solid'
+  from "embla-carousel-solid";
 
 import cn
-  from 'classnames'
+  from "classnames";
 
 import {
   BsBoxArrowInLeft,
   BsBoxArrowInRight,
-} from 'solid-icons/bs'
+} from "solid-icons/bs";
 
 import {
   HomeSlide,
-} from '../Slide'
+} from "../Slide";
 
 import BarChartSlide
-  from '../Slide/BarChartSlide'
+  from "../Slide/BarChartSlide";
 
 import LineChartSlide
-  from '../Slide/LineChartSlide'
+  from "../Slide/LineChartSlide";
 
 import {
   barChartSlides,
   censusCategories,
-} from '../Slide/slideData'
+} from "../Slide/slideData";
 
 import ExplorerHeader
-  from '../ExplorerHeader/ExplorerHeader'
+  from "../ExplorerHeader/ExplorerHeader";
 
 import type {
   CensusViewId,
-} from '../ExplorerHeader/viewData'
+} from "../ExplorerHeader/viewData";
 
 import CategoryRail
-  from '../CategoryRail/CategoryRail'
+  from "../CategoryRail/CategoryRail";
 
 import ProjectFooter
-  from '../ProjectFooter/ProjectFooter'
+  from "../ProjectFooter/ProjectFooter";
 
 import styles
-  from './slider.module.scss'
+  from "./slider.module.scss";
 
 export default function Slider() {
   const [
     emblaRef,
     emblaApi,
   ] =
-    createEmblaCarousel()
+    createEmblaCarousel();
 
   const [
     canScrollNext,
@@ -60,7 +60,7 @@ export default function Slider() {
   ] =
     createSignal(
       false,
-    )
+    );
 
   const [
     canScrollPrev,
@@ -68,7 +68,7 @@ export default function Slider() {
   ] =
     createSignal(
       false,
-    )
+    );
 
   const [
     slideIndex,
@@ -76,7 +76,7 @@ export default function Slider() {
   ] =
     createSignal(
       0,
-    )
+    );
 
   const [
     selectedView,
@@ -85,30 +85,30 @@ export default function Slider() {
     createSignal<
       CensusViewId
     >(
-      'snapshot',
-    )
+      "stacked",
+    );
 
   const syncCarouselState =
     () => {
       const api =
-        emblaApi()
+        emblaApi();
 
       if (!api) {
-        return
+        return;
       }
 
       setCanScrollNext(
         api.canScrollNext(),
-      )
+      );
 
       setCanScrollPrev(
         api.canScrollPrev(),
-      )
+      );
 
       setSlideIndex(
         api.selectedScrollSnap(),
-      )
-    }
+      );
+    };
 
   const selectSlide =
     (
@@ -118,16 +118,16 @@ export default function Slider() {
       emblaApi()
         ?.scrollTo(
           index,
-        )
-    }
+        );
+    };
 
   onMount(
     () => {
       const api =
-        emblaApi()
+        emblaApi();
 
       if (!api) {
-        return
+        return;
       }
 
       const handleKeyDown =
@@ -141,7 +141,7 @@ export default function Slider() {
             event.ctrlKey ||
             event.shiftKey
           ) {
-            return
+            return;
           }
 
           if (
@@ -155,62 +155,62 @@ export default function Slider() {
               instanceof
               HTMLButtonElement
           ) {
-            return
+            return;
           }
 
           if (
             event.key ===
-            'ArrowRight'
+            "ArrowRight"
           ) {
-            api.scrollNext()
+            api.scrollNext();
           }
 
           if (
             event.key ===
-            'ArrowLeft'
+            "ArrowLeft"
           ) {
-            api.scrollPrev()
+            api.scrollPrev();
           }
-        }
+        };
 
-      syncCarouselState()
-
-      api.on(
-        'select',
-        syncCarouselState,
-      )
+      syncCarouselState();
 
       api.on(
-        'reInit',
+        "select",
         syncCarouselState,
-      )
+      );
+
+      api.on(
+        "reInit",
+        syncCarouselState,
+      );
 
       window.addEventListener(
-        'keydown',
+        "keydown",
         handleKeyDown,
-      )
+      );
 
       onCleanup(
         () => {
           window
             .removeEventListener(
-              'keydown',
+              "keydown",
               handleKeyDown,
-            )
+            );
 
           api.off(
-            'select',
+            "select",
             syncCarouselState,
-          )
+          );
 
           api.off(
-            'reInit',
+            "reInit",
             syncCarouselState,
-          )
+          );
         },
-      )
+      );
     },
-  )
+  );
 
   return (
     <main
@@ -289,7 +289,7 @@ export default function Slider() {
                     <Show
                       when={
                         selectedView() ===
-                        'trend'
+                        "trend"
                       }
 
                       fallback={
@@ -407,5 +407,5 @@ export default function Slider() {
 
       <ProjectFooter />
     </main>
-  )
+  );
 }

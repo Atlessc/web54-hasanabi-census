@@ -1,20 +1,20 @@
 export type CensusViewId =
-  | 'snapshot'
-  | 'trend'
+  | "stacked"
+  | "trend";
 
 export interface CensusView {
-  id: CensusViewId
-  name: string
+  id: CensusViewId;
+  name: string;
 }
 
 export const censusViews:
   CensusView[] = [
-  {
-    id: 'snapshot',
-    name: 'Snapshot',
-  },
-  {
-    id: 'trend',
-    name: 'Trend',
-  },
-]
+    {
+      id: "stacked",
+      name: "Stacked",
+    },
+    {
+      id: "trend",
+      name: "Trend",
+    },
+  ];
