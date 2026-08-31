@@ -4,18 +4,24 @@
   height: 100%;
   width: 100%;
 
+  min-width: 0;
+  min-height: 0;
+
   padding: 1rem 0;
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
 
-  min-height: 0;
+  overflow: hidden;
 
   font-size: 18px;
 
   > * {
     margin: 0;
+
+    min-width: 0;
+    max-width: 100%;
   }
 
   &.home {
@@ -45,13 +51,16 @@
     color: transparent;
 
     background:
-      url('../../images/title.svg')
+      url(
+        '../../images/title.svg'
+      )
       center / contain
       no-repeat;
   }
 
   @media screen and
     (max-width: 1600px) {
+
     h1 {
       font-size:
         min(
@@ -77,9 +86,11 @@
 
     font-size: 1.5rem;
 
-    $rotate: rotate(12deg);
+    $rotate:
+      rotate(12deg);
 
-    transform-origin: center;
+    transform-origin:
+      center;
 
     animation:
       pulse
@@ -143,9 +154,15 @@
   flex: 0 0 auto;
 
   width: 100%;
+  min-width: 0;
 
-  padding: 0 1rem .65rem;
-  box-sizing: border-box;
+  padding:
+    0
+    1rem
+    .65rem;
+
+  box-sizing:
+    border-box;
 
   text-align: center;
 
@@ -164,19 +181,88 @@
 }
 
 .chartFrame {
+  /*
+   * This owns the available Explorer
+   * visualization space.
+   */
   flex: 1 1 auto;
 
   width: 100%;
 
+  min-width: 0;
   min-height: 0;
 
   display: flex;
-  align-items: center;
+
+  /*
+   * Horizontal width is determined by
+   * BarChartSlide.
+   *
+   * Vertical space comes from the Explorer
+   * layout.
+   */
+  align-items: stretch;
   justify-content: center;
+
+  overflow: hidden;
+}
+
+.chartStage {
+  /*
+   * Width is assigned explicitly by
+   * BarChartSlide.tsx.
+   */
+  flex: 0 0 auto;
+
+  position: relative;
+
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  max-width: 100%;
 
   overflow: hidden;
 }
 
 .chart {
   display: block;
+
+  /*
+   * Chart.js fills the deterministic
+   * chartStage instead of contributing
+   * intrinsic width back into layout.
+   */
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: 100%;
+  max-height: 100%;
+}
+
+@media screen and
+  (max-width: 700px) {
+
+  // .slide {
+  //   padding:
+  //     0
+  //     0;
+  // }
+
+  .slideHeader {
+    // padding:
+    //   0
+    //   .65rem
+    //   .4rem;
+
+    h2 {
+      font-size:
+        clamp(
+          1.35rem,
+          7vw,
+          1.8rem
+        );
+    }
+  }
 }
