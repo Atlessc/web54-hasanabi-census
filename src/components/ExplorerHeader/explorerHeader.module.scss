@@ -33,10 +33,11 @@
 
   min-width: 0;
 
-  width: min(
-    23rem,
-    42vw
-  );
+  width:
+    min(
+      23rem,
+      42vw
+    );
 
   padding: 0;
 
@@ -96,7 +97,8 @@
     1px solid
     rgba(255, 255, 255, .13);
 
-  background: #171717;
+  background:
+    #171717;
 }
 
 .categoryControl {
@@ -112,14 +114,29 @@
   align-items: stretch;
 }
 
-.categoryTrigger {
+.view {
+  position: relative;
+
+  flex: 0 0 auto;
+
+  width: 9rem;
+  min-width: 0;
+
+  padding: 0;
+
+  display: flex;
+  align-items: stretch;
+
+  white-space: nowrap;
+}
+
+.categoryTrigger,
+.viewTrigger {
   width: 100%;
   min-width: 0;
   max-width: 100%;
 
   height: 100%;
-
-  padding: 0 .8rem;
 
   border: 0;
   outline: 0;
@@ -129,7 +146,6 @@
 
   display: flex;
   align-items: center;
-  gap: .55rem;
 
   font: inherit;
 
@@ -152,6 +168,22 @@
 
     outline-offset: -1px;
   }
+}
+
+.categoryTrigger {
+  padding:
+    0
+    .8rem;
+
+  gap: .55rem;
+}
+
+.viewTrigger {
+  padding:
+    0
+    .7rem;
+
+  gap: .45rem;
 }
 
 .categoryLabel,
@@ -179,6 +211,21 @@
   text-overflow: ellipsis;
 }
 
+.viewValue {
+  flex: 1 1 auto;
+
+  min-width: 0;
+
+  color: #eee;
+
+  font-size: .78rem;
+
+  text-align: right;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .categoryCaret {
   flex: 0 0 auto;
 
@@ -202,37 +249,25 @@
 }
 
 .categoryCaretOpen {
-  transform: rotate(180deg);
+  transform:
+    rotate(180deg);
 
-  border-top-color: #ff1f50;
+  border-top-color:
+    #ff1f50;
 }
 
-.categoryMenu {
+.categoryMenu,
+.viewMenu {
   position: absolute;
 
-  top: calc(100% + .4rem);
+  top:
+    calc(100% + .4rem);
+
   right: 0;
 
-  min-width: 100%;
-  width: max-content;
-
-  max-width:
-    min(
-      20rem,
-      calc(100vw - 2rem)
-    );
-
-  max-height:
-    min(
-      65vh,
-      25rem
-    );
-
-  padding: .3rem;
   box-sizing: border-box;
 
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  padding: .3rem;
 
   border:
     1px solid
@@ -257,22 +292,57 @@
     top right;
 
   animation:
-    category-menu-in
+    menu-in
     .14s
     ease-out;
 }
 
-.categoryOption {
+.categoryMenu {
+  min-width: 100%;
+
+  width:
+    max-content;
+
+  max-width:
+    min(
+      20rem,
+      calc(100vw - 2rem)
+    );
+
+  max-height:
+    min(
+      65vh,
+      25rem
+    );
+
+  overflow-y: auto;
+
+  overscroll-behavior:
+    contain;
+}
+
+.viewMenu {
+  width: 100%;
+  min-width: 100%;
+}
+
+.categoryOption,
+.viewOption {
   position: relative;
 
   width: 100%;
 
-  padding: .58rem .75rem;
+  padding:
+    .58rem
+    .75rem;
 
   border: 0;
 
-  background: transparent;
-  color: #aaa;
+  background:
+    transparent;
+
+  color:
+    #aaa;
 
   display: flex;
   align-items: center;
@@ -295,16 +365,21 @@
   &:focus-visible {
     outline: 0;
 
-    background: #242424;
-    color: #fff;
+    background:
+      #242424;
+
+    color:
+      #fff;
   }
 }
 
-.categoryOptionSelected {
+.categoryOptionSelected,
+.viewOptionSelected {
   background:
     rgba(255, 31, 80, .08);
 
-  color: #fff;
+  color:
+    #fff;
 
   &::before {
     content: '';
@@ -317,7 +392,8 @@
 
     width: 2px;
 
-    background: #ff1f50;
+    background:
+      #ff1f50;
   }
 }
 
@@ -329,34 +405,15 @@
 
   border-radius: 50%;
 
-  background: #ff1f50;
+  background:
+    #ff1f50;
 
   box-shadow:
     0 0 .55rem
     rgba(255, 31, 80, .45);
 }
 
-.view {
-  flex: 0 0 auto;
-
-  padding:
-    0
-    .85rem;
-
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-
-  white-space: nowrap;
-}
-
-.viewValue {
-  color: #eee;
-
-  font-size: .78rem;
-}
-
-@keyframes category-menu-in {
+@keyframes menu-in {
   from {
     opacity: 0;
 
@@ -436,13 +493,6 @@
         100vw - 1.6rem
       );
   }
-
-  /*
-   * Keep View visible at tablet widths.
-   */
-  .view {
-    display: flex;
-  }
 }
 
 @media screen and
@@ -458,10 +508,6 @@
     gap: .65rem;
   }
 
-  /*
-   * Logo occupies the left side of the
-   * header and may shrink when necessary.
-   */
   .brand {
     flex: 1 1 auto;
 
@@ -480,20 +526,14 @@
   }
 
   /*
-   * On mobile the header no longer performs
-   * category navigation.
-   *
-   * The bottom category rail is the mobile
-   * category navigator.
+   * Mobile category navigation
+   * remains exclusively in the
+   * lower category rail.
    */
   .categoryControl {
     display: none;
   }
 
-  /*
-   * With the category dropdown gone, controls
-   * only needs to hold the stable View control.
-   */
   .controls {
     flex: 0 0 auto;
 
@@ -503,22 +543,23 @@
   }
 
   /*
-   * View remains visible on mobile.
+   * View stays in the top bar.
    */
   .view {
     display: flex;
 
     flex: 0 0 auto;
 
+    width: 8.4rem;
     height: 2.7rem;
+  }
 
+  .viewTrigger {
     padding:
       0
-      .7rem;
+      .65rem;
 
     gap: .4rem;
-
-    white-space: nowrap;
   }
 
   .viewLabel {
@@ -567,13 +608,16 @@
   }
 
   .view {
+    width: 7.7rem;
     height: 2.55rem;
+  }
 
+  .viewTrigger {
     padding:
       0
-      .6rem;
+      .55rem;
 
-    gap: .35rem;
+    gap: .3rem;
   }
 
   .viewLabel {
