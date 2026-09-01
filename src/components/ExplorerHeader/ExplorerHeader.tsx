@@ -337,7 +337,7 @@ export default function ExplorerHeader(
           styles.controls
         }
       >
-        <div
+        {/* <div
           class={
             styles.categoryControl
           }
@@ -421,7 +421,7 @@ export default function ExplorerHeader(
             />
           </button>
 
-          <Show
+           <Show
             when={
               categoryOpen()
             }
@@ -503,8 +503,8 @@ export default function ExplorerHeader(
                 )
               }
             </div>
-          </Show>
-        </div>
+          </Show> 
+        </div> */}
 
         <div
           class={

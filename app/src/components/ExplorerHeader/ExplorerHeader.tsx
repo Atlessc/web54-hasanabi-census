@@ -32,25 +32,25 @@ import styles
 
 interface ExplorerHeaderProps {
   categories:
-    CensusCategory[]
+  CensusCategory[]
 
   selectedIndex:
-    number
+  number
 
   onSelect:
-    (
-      index:
-        number,
-    ) => void
+  (
+    index:
+      number,
+  ) => void
 
   selectedView:
-    CensusViewId
+  CensusViewId
 
   onViewChange:
-    (
-      view:
-        CensusViewId,
-    ) => void
+  (
+    view:
+      CensusViewId,
+  ) => void
 }
 
 export default function ExplorerHeader(
@@ -89,7 +89,7 @@ export default function ExplorerHeader(
   const selectedCategory =
     () =>
       props.categories[
-        props.selectedIndex
+      props.selectedIndex
       ] ??
       props.categories[0]
 
@@ -137,11 +137,11 @@ export default function ExplorerHeader(
     ) => {
       if (
         event.key ===
-          'Enter' ||
+        'Enter' ||
         event.key ===
-          ' ' ||
+        ' ' ||
         event.key ===
-          'ArrowDown'
+        'ArrowDown'
       ) {
         event.preventDefault()
 
@@ -171,11 +171,11 @@ export default function ExplorerHeader(
     ) => {
       if (
         event.key ===
-          'Enter' ||
+        'Enter' ||
         event.key ===
-          ' ' ||
+        ' ' ||
         event.key ===
-          'ArrowDown'
+        'ArrowDown'
       ) {
         event.preventDefault()
 
@@ -306,10 +306,10 @@ export default function ExplorerHeader(
         }}
 
         type=
-          "button"
+        "button"
 
         aria-label=
-          "Go to census home"
+        "Go to census home"
 
         onclick={
           () =>
@@ -328,7 +328,7 @@ export default function ExplorerHeader(
           alt=""
 
           aria-hidden=
-            "true"
+          "true"
         />
       </button>
 
@@ -337,7 +337,7 @@ export default function ExplorerHeader(
           styles.controls
         }
       >
-        <div
+        {/* <div
           class={
             styles.categoryControl
           }
@@ -352,17 +352,16 @@ export default function ExplorerHeader(
             }
 
             type=
-              "button"
+            "button"
 
             aria-label={
-              `Census category: ${
-                selectedCategory()
-                  ?.name
+              `Census category: ${selectedCategory()
+                ?.name
               }`
             }
 
             aria-haspopup=
-              "menu"
+            "menu"
 
             aria-expanded={
               categoryOpen()
@@ -417,7 +416,7 @@ export default function ExplorerHeader(
               }}
 
               aria-hidden=
-                "true"
+              "true"
             />
           </button>
 
@@ -432,10 +431,10 @@ export default function ExplorerHeader(
               }
 
               role=
-                "menu"
+              "menu"
 
               aria-label=
-                "Census categories"
+              "Census categories"
             >
               {
                 props.categories.map(
@@ -459,10 +458,10 @@ export default function ExplorerHeader(
                       }}
 
                       type=
-                        "button"
+                      "button"
 
                       role=
-                        "menuitemradio"
+                      "menuitemradio"
 
                       aria-checked={
                         props.selectedIndex ===
@@ -495,7 +494,7 @@ export default function ExplorerHeader(
                           }
 
                           aria-hidden=
-                            "true"
+                          "true"
                         />
                       </Show>
                     </button>
@@ -504,7 +503,7 @@ export default function ExplorerHeader(
               }
             </div>
           </Show>
-        </div>
+        </div> */}
 
         <div
           class={
@@ -521,17 +520,16 @@ export default function ExplorerHeader(
             }
 
             type=
-              "button"
+            "button"
 
             aria-label={
-              `Census view: ${
-                selectedView()
-                  .name
+              `Census view: ${selectedView()
+                .name
               }`
             }
 
             aria-haspopup=
-              "menu"
+            "menu"
 
             aria-expanded={
               viewOpen()
@@ -586,7 +584,7 @@ export default function ExplorerHeader(
               }}
 
               aria-hidden=
-                "true"
+              "true"
             />
           </button>
 
@@ -601,10 +599,10 @@ export default function ExplorerHeader(
               }
 
               role=
-                "menu"
+              "menu"
 
               aria-label=
-                "Census views"
+              "Census views"
             >
               {
                 censusViews.map(
@@ -625,10 +623,10 @@ export default function ExplorerHeader(
                       }}
 
                       type=
-                        "button"
+                      "button"
 
                       role=
-                        "menuitemradio"
+                      "menuitemradio"
 
                       aria-checked={
                         props.selectedView ===
@@ -661,7 +659,7 @@ export default function ExplorerHeader(
                           }
 
                           aria-hidden=
-                            "true"
+                          "true"
                         />
                       </Show>
                     </button>
