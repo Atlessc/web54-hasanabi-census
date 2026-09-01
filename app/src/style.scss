@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Fraunces';
+  src: url('./fonts/Fraunces_9pt-Regular-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('./fonts/Fraunces_9pt-Italic-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('./fonts/Archivo_SemiExpanded-Medium-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  overflow: hidden;
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+
+  background-color: #111;
+  color: #ddd;
+  overflow: hidden;
+}

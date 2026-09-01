@@ -1,0 +1,160 @@
+.explorer {
+  height: 100dvh;
+  width: 100%;
+
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  overflow: hidden;
+
+  background: #111;
+}
+
+.visualization {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+.slider {
+  height: 100%;
+  width: 100%;
+
+  min-width: 0;
+
+  overflow: hidden;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+
+  min-width: 0;
+
+  display: flex;
+}
+
+.slide {
+  /*
+   * Every Embla snap is exactly one
+   * viewport wide, regardless of anything
+   * rendered inside the slide.
+   */
+  flex:
+    0 0 100%;
+
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  /*
+   * Child layout/painting stays local to
+   * this snap and cannot bleed into the
+   * neighbouring Embla slide.
+   */
+  contain:
+    layout paint;
+}
+
+.arrow {
+  $size: 4rem;
+
+  position: absolute;
+
+  top:
+    calc(
+      50% -
+      #{$size} / 2
+    );
+
+  z-index: 4;
+
+  height: $size;
+  width: $size;
+
+  appearance: none;
+
+  border: none;
+
+  background-color:
+    transparent;
+
+  filter:
+    drop-shadow(
+      0 2px 2px #111
+    );
+
+  font-size: 2rem;
+
+  color: currentColor;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    transform:
+      scale(1.1);
+  }
+
+  &.hide,
+  &:disabled {
+    opacity: 0;
+
+    pointer-events: none;
+  }
+
+  &.next {
+    right: 2rem;
+  }
+
+  &.prev {
+    left: 2rem;
+  }
+
+  @media screen and
+    (max-width: 1200px) {
+
+    &.next {
+      right: 0;
+    }
+
+    &.prev {
+      left: 0;
+    }
+  }
+}
+
+@media screen and
+  (max-width: 700px) {
+
+  .arrow {
+    display: none;
+  }
+}
